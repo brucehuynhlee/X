@@ -1,21 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_edit_contact"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackGroundFinal"
     tools:context="a8.group.ttnm.x.view.EditContact">
-    <LinearLayout
+
+    <ScrollView
+        android:scrollbars="vertical"
+        android:fillViewport="true"
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="wrap_content">
-        <RelativeLayout
-            android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="300px">
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+          <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="160dp"
                 android:src="@mipmap/person"
                 android:background="@color/colorPrimaryDark"
                 android:id="@+id/imageView"
@@ -24,127 +34,208 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true" />
-            <ImageButton
-                android:layout_width="10dp"
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fabChooseImage"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_menu_search"
-                android:id="@+id/imageButton"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"  />
-
+                android:src="@android:drawable/ic_menu_upload"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="125dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="16dp" />
         </RelativeLayout>
-        <ScrollView
-            android:scrollbars="vertical"
-            android:fillViewport="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TaLayout
-                android:orientation="vertical"
+          <TableLayout
+               android:layout_marginLeft="@dimen/tableLayout"
+               android:layout_marginRight="@dimen/tableLayout"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+
+               <!--Phone Number-->
+               <TextView
+                   android:textSize="@dimen/textSizeEditPhone"
+                   android:textStyle="bold"
+                   android:textColor="@color/colorPrimary"
+                   android:text="Số điện thoại"/>
+               <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/holo_blue_bright" />
+               <TableRow
+                android:layout_marginBottom="@dimen/phone_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <!--Phone Name-->
-                <LinearLayout
-                    android:layout_marginTop="@dimen/phone_edit"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="0.2"
-                        android:src="@mipmap/dial_3"/>
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="wrap_content"
-                        android:layout_weight="0.8"
-                        android:layout_height="match_parent">
-                        <EditText
-                            android:id="@+id/contact_name"
-                            android:ems="10"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Phone" />
-                    </android.support.design.widget.TextInputLayout>
-                </LinearLayout>
-                <!--Phone Number-->
-                <LinearLayout
-                    android:layout_marginTop="@dimen/phone_edit"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="0.28"
-                        android:src="@android:drawable/stat_sys_phone_call_forward"/>
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="wrap_content"
-                        android:layout_weight="0.8"
-                        android:layout_height="match_parent">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@android:drawable/ic_menu_call"/>
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_weight="20"
+                    android:layout_height="match_parent">
+                    <EditText
+                        android:id="@+id/contact_name"
+                        android:ems="10"
+                        android:imeOptions="actionNext"
+                        android:inputType="phone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Nhập số điện thoại" />
+                </android.support.design.widget.TextInputLayout>
+            </TableRow>
 
-                        <EditText
-                            android:id="@+id/phone_number"
-                            android:ems="10"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Name" />
-                    </android.support.design.widget.TextInputLayout>
-                </LinearLayout>
-                <!--Email-->
-                <LinearLayout
-                    android:layout_marginTop="@dimen/phone_edit"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+               <!--Phone Name-->
+               <TextView
+                   android:textSize="@dimen/textSizeEditPhone"
+                   android:textStyle="bold"
+                   android:textColor="@color/colorPrimary"
+                   android:text="Tên liên hệ"/>
+               <View
+                   android:layout_width="match_parent"
+                   android:layout_height="1dp"
+                   android:background="@android:color/holo_blue_bright" />
+               <TableRow
+                android:layout_marginBottom="@dimen/phone_edit"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="0.2"
-                        android:src="@android:drawable/sym_action_email"
-                        android:id="@+id/imageView2" />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@mipmap/ic_contacts"
+                    android:id="@+id/imageView3" />
 
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="wrap_content"
-                        android:layout_weight="0.8"
-                        android:layout_height="match_parent">
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_weight="20"
+                    android:layout_height="match_parent">
 
-                        <EditText
-                            android:id="@+id/phone_email"
-                            android:ems="10"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Email" />
-                    </android.support.design.widget.TextInputLayout>
-                </LinearLayout>
-                <!--Email-->
-                <LinearLayout
-                    android:layout_marginTop="@dimen/phone_edit"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    <EditText
+                        android:id="@+id/phone_number"
+                        android:ems="10"
+                        android:inputType="textPersonName"
+                        android:imeOptions="actionNext"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Nhập tên liên hệ" />
+                </android.support.design.widget.TextInputLayout>
+               </TableRow>
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="0.2"
-                        android:src="@android:drawable/sym_action_email"
-                        android:id="@+id/imageView3" />
+               <!-- Email -->
+               <TextView
+                   android:textSize="@dimen/textSizeEditPhone"
+                   android:textStyle="bold"
+                   android:textColor="@color/colorPrimary"
+                   android:text="Email"/>
+               <View
+                  android:layout_width="match_parent"
+                  android:layout_height="1dp"
+                  android:background="@android:color/holo_blue_bright" />
+               <TableRow
+                android:layout_marginBottom="@dimen/phone_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="wrap_content"
-                        android:layout_weight="0.8"
-                        android:layout_height="match_parent">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@android:drawable/sym_action_email"
+                    android:id="@+id/imageView2" />
 
-                        <EditText
-                            android:id="@+id/phone_emaifl"
-                            android:ems="10"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Email" />
-                    </android.support.design.widget.TextInputLayout>
-                </LinearLayout>
-            </TaLayout>
-        </ScrollView>
-    </LinearLayout>
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_weight="20"
+                    android:layout_height="match_parent">
+
+                    <EditText
+                        android:imeOptions="actionNext"
+                        android:inputType="textEmailAddress"
+                        android:id="@+id/phone_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Nhập địa chỉ mail" />
+                </android.support.design.widget.TextInputLayout>
+            </TableRow>
+
+              <!-- Address -->
+              <TextView
+                  android:textSize="@dimen/textSizeEditPhone"
+                  android:textStyle="bold"
+                  android:textColor="@color/colorPrimary"
+                  android:text="Địa chỉ"/>
+              <View
+                  android:layout_width="match_parent"
+                  android:layout_height="1dp"
+                  android:background="@android:color/holo_blue_bright" />
+              <TableRow
+                  android:layout_marginBottom="@dimen/phone_edit"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content">
+
+                  <ImageView
+                      android:layout_width="wrap_content"
+                      android:layout_height="match_parent"
+                      android:layout_weight="1"
+                      android:src="@android:drawable/ic_dialog_map"
+                      android:id="@+id/imageView4" />
+
+                  <android.support.design.widget.TextInputLayout
+                      android:layout_width="wrap_content"
+                      android:layout_weight="20"
+                      android:layout_height="match_parent">
+
+                      <EditText
+                          android:imeOptions="actionNext"
+                          android:inputType="textEmailAddress"
+                          android:id="@+id/phone_address"
+                          android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:hint="Nhập địa chỉ thực" />
+                  </android.support.design.widget.TextInputLayout>
+              </TableRow>
+
+              <!-- Group -->
+              <TextView
+                  android:textSize="@dimen/textSizeEditPhone"
+                  android:textStyle="bold"
+                  android:textColor="@color/colorPrimary"
+                  android:text="Nhóm người dùng"/>
+              <View
+                  android:layout_width="match_parent"
+                  android:layout_height="1dp"
+                  android:background="@android:color/holo_blue_bright" />
+              <TableRow
+                  android:layout_marginBottom="@dimen/phone_edit"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content">
+
+                  <ImageView
+                      android:layout_width="wrap_content"
+                      android:layout_height="match_parent"
+                      android:layout_weight="1"
+                      android:src="@android:drawable/ic_dialog_map"
+                      android:id="@+id/imageView5" />
+                  <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+                      android:id="@+id/android_material_design_spinner"
+                      android:layout_width="wrap_content"
+                      android:layout_height="match_parent"
+                      android:hint="Chọn một nhóm"
+                      android:layout_weight="20"
+                      android:textColorHint="#05ab9a"
+                      app:met_floatingLabel="normal" />
+
+              </TableRow>
+
+        </TableLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
 
 </RelativeLayout>

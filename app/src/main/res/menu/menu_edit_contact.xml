@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="a8.group.ttnm.x.main" >
+    <item
+        android:id="@+id/saveContact"
+        android:title="@android:string/search_go"
+        android:icon="@mipmap/ic_done"
+        app:showAsAction="ifRoom"
+        android:titleCondensed="Xong"
+        android:visible="true" />
+
+</menu>

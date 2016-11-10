@@ -3,5 +3,6 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="colorDialPad">#fafafa</color>
+    <color name="colorDialPad">#ffffff</color>
+    <color name="colorBackGroundFinal">#FFFFFF</color>
 </resources>

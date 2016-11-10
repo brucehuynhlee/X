@@ -12,6 +12,6 @@
         android:layout_weight="1">
         <ImageButton
             android:id="@+id/one"
-            android:src="@mipmap/dial_num_1" />
+            android:src="@mipmap/dial" />
     </TableRow>
 </TableLayout>

@@ -9,6 +9,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import a8.group.ttnm.x.R;
 import a8.group.ttnm.x.main;
@@ -34,6 +40,44 @@ public class ContactsFragment extends Fragment {
 
     private FloatingActionButton btnContact ;
     private OnFragmentInteractionListener mListener;
+    ListView listContacts ;
+
+    // Array of strings for ListView Title
+    String[] listviewTitle = new String[]{
+            "ListView Title 1", "ListView Title 2", "ListView Title 3", "ListView Title 4",
+            "ListView Title 5", "ListView Title 6", "ListView Title 7", "ListView Title 8",
+    };
+
+
+    int[] listviewImage = new int[]{
+            R.drawable.met_ic_clear, R.drawable.met_ic_clear,R.drawable.met_ic_clear, R.drawable.met_ic_clear,
+            R.drawable.met_ic_clear,R.drawable.met_ic_clear, R.drawable.met_ic_clear, R.drawable.met_ic_clear,
+
+    };
+
+    String[] listviewShortDescription = new String[]{
+            "Android ListView Short Description", "Android ListView Short Description", "Android ListView Short Description", "Android ListView Short Description",
+            "Android ListView Short Description", "Android ListView Short Description", "Android ListView Short Description", "Android ListView Short Description",
+    };
+
+    public void init(){
+        List<HashMap<String, String>> aList = new ArrayList<HashMap<String, String>>();
+
+        for (int i = 0; i < 6; i++) {
+            HashMap<String, String> hm = new HashMap<String, String>();
+            hm.put("listview_title", listviewTitle[i]);
+            hm.put("listview_discription", listviewShortDescription[i]);
+            hm.put("listview_image", Integer.toString(listviewImage[i]));
+            aList.add(hm);
+        }
+
+        String[] from = {"listview_image", "listview_title", "listview_discription"};
+        int[] to = {R.id.listview_image, R.id.listview_item_title, R.id.listview_item_description};
+
+        SimpleAdapter simpleAdapter = new SimpleAdapter(getActivity(), aList, R.layout.item_contacts, from, to);
+        listContacts.setAdapter(simpleAdapter);
+    }
+
 
     public ContactsFragment() {
         // Required empty public constructor
@@ -65,6 +109,7 @@ public class ContactsFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+
     }
 
     @Override
@@ -72,6 +117,7 @@ public class ContactsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_contacts, container, false);
+        listContacts = (ListView) view.findViewById(R.id.listContacts);
         btnContact = (FloatingActionButton) view.findViewById(R.id.fabContacts);
         btnContact.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,6 +126,7 @@ public class ContactsFragment extends Fragment {
                 startActivity(intent);
             }
         });
+        init();
         return view;
     }
 

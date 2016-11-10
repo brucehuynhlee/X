@@ -3,6 +3,12 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+    <!-- Dialpad activity -->
     <dimen name="dialpad_height">100px</dimen>
-    <dimen name="phone_edit">10px</dimen>
+
+    <!-- Edit Phone Activity -->
+    <dimen name="phone_edit">10dp</dimen>
+    <dimen name="tableLayout">10dp</dimen>
+    <dimen name="textSizeEditPhone">30px</dimen>
 </resources>
