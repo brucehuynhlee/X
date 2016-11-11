@@ -22,7 +22,7 @@
         android:icon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppThemeNew">
         <activity
             android:name=".main"
             android:label="@string/app_name"
@@ -53,6 +53,7 @@
         <activity
             android:name=".view.PhoneCalling"
             android:windowSoftInputMode="stateAlwaysHidden"></activity>
+
         <activity
             android:name=".view.EditContact"
             android:theme="@style/AppTheme"

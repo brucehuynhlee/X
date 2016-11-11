@@ -6,11 +6,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,9 +43,15 @@ public class ContactsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private static final String TAG = "LIST_CONTACTS";
+    private static final int MENU_EDIT = 0;
+    private static final int MENU_DELETE = 1;
+    private static final String[] menuItem = {"Edit","Delete"};
     private FloatingActionButton btnContact ;
     private OnFragmentInteractionListener mListener;
     ListView listContacts ;
+    SimpleAdapter simpleAdapter;
+    List<HashMap<String, String>> aList ;
 
     // Array of strings for ListView Title
     String[] listviewTitle = new String[]{
@@ -61,7 +72,7 @@ public class ContactsFragment extends Fragment {
     };
 
     public void init(){
-        List<HashMap<String, String>> aList = new ArrayList<HashMap<String, String>>();
+        aList = new ArrayList<HashMap<String, String>>();
 
         for (int i = 0; i < 6; i++) {
             HashMap<String, String> hm = new HashMap<String, String>();
@@ -74,32 +85,11 @@ public class ContactsFragment extends Fragment {
         String[] from = {"listview_image", "listview_title", "listview_discription"};
         int[] to = {R.id.listview_image, R.id.listview_item_title, R.id.listview_item_description};
 
-        SimpleAdapter simpleAdapter = new SimpleAdapter(getActivity(), aList, R.layout.item_contacts, from, to);
+        simpleAdapter = new SimpleAdapter(getActivity(), aList, R.layout.item_contacts, from, to);
         listContacts.setAdapter(simpleAdapter);
+        registerForContextMenu(listContacts);
     }
 
-
-    public ContactsFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ContactsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ContactsFragment newInstance(String param1, String param2) {
-        ContactsFragment fragment = new ContactsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -126,9 +116,44 @@ public class ContactsFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        // init all
         init();
         return view;
     }
+
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo){
+        if(v.getId() == R.id.listContacts){
+            AdapterView.AdapterContextMenuInfo infoAdapter = (AdapterView.AdapterContextMenuInfo) menuInfo ;
+            menu.setHeaderTitle(listviewTitle[infoAdapter.position]);
+            //Toast.makeText(this.getActivity(),listviewTitle[infoAdapter.position],Toast.LENGTH_LONG).show();
+            for (int i = 0; i < menuItem.length ; i++) {
+                menu.add(Menu.NONE, i, i, menuItem[i]);
+            }
+        }
+
+    }
+    @Override
+    public boolean onContextItemSelected(MenuItem menuItem){
+        AdapterView.AdapterContextMenuInfo infoItem = (AdapterView.AdapterContextMenuInfo)menuItem.getMenuInfo();
+        int indexMenuItem = menuItem.getItemId();
+        int indexContact = infoItem.position ;
+        switch (indexMenuItem){
+            case MENU_EDIT:
+                break;
+            case MENU_DELETE:
+                //Toast.makeText(this.getActivity(),"show",Toast.LENGTH_LONG).show();
+                aList.remove(indexContact);
+                simpleAdapter.notifyDataSetChanged();
+                break;
+        }
+        return true;
+    }
+
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
