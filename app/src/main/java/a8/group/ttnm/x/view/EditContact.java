@@ -120,6 +120,10 @@ public class EditContact extends AppCompatActivity implements View.OnClickListen
         }
     }
 
+    private void saveContact(){
+
+    }
+
 
 
 }

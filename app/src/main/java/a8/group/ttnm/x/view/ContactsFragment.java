@@ -23,6 +23,7 @@ import java.util.List;
 
 import a8.group.ttnm.x.R;
 import a8.group.ttnm.x.main;
+import a8.group.ttnm.x.model.ContactsFactory;
 
 
 /**
@@ -52,41 +53,38 @@ public class ContactsFragment extends Fragment {
     ListView listContacts ;
     SimpleAdapter simpleAdapter;
     List<HashMap<String, String>> aList ;
-
-    // Array of strings for ListView Title
-    String[] listviewTitle = new String[]{
-            "ListView Title 1", "ListView Title 2", "ListView Title 3", "ListView Title 4",
-            "ListView Title 5", "ListView Title 6", "ListView Title 7", "ListView Title 8",
-    };
-
+    ContactsFactory contactsFactory ;
 
     int[] listviewImage = new int[]{
-            R.drawable.met_ic_clear, R.drawable.met_ic_clear,R.drawable.met_ic_clear, R.drawable.met_ic_clear,
-            R.drawable.met_ic_clear,R.drawable.met_ic_clear, R.drawable.met_ic_clear, R.drawable.met_ic_clear,
+            R.mipmap.profile, R.mipmap.profile,R.mipmap.profile, R.mipmap.profile,
+            R.mipmap.profile,R.mipmap.profile, R.mipmap.profile, R.mipmap.profile,
 
-    };
-
-    String[] listviewShortDescription = new String[]{
-            "Android ListView Short Description", "Android ListView Short Description", "Android ListView Short Description", "Android ListView Short Description",
-            "Android ListView Short Description", "Android ListView Short Description", "Android ListView Short Description", "Android ListView Short Description",
     };
 
     public void init(){
         aList = new ArrayList<HashMap<String, String>>();
-
-        for (int i = 0; i < 6; i++) {
+        contactsFactory = ContactsFactory.getInstanceContactsFactory() ;
+        for (int i = 0; i < contactsFactory.contact.size(); i++) {
             HashMap<String, String> hm = new HashMap<String, String>();
-            hm.put("listview_title", listviewTitle[i]);
-            hm.put("listview_discription", listviewShortDescription[i]);
-            hm.put("listview_image", Integer.toString(listviewImage[i]));
+            hm.put("profile_contact", Integer.toString(listviewImage[i]));
+            hm.put("name_contact", contactsFactory.contact.get(i).getNameContact());
+            hm.put("number_contact", contactsFactory.contact.get(i).getNumberContact());
             aList.add(hm);
         }
 
-        String[] from = {"listview_image", "listview_title", "listview_discription"};
+        String[] from = {"profile_contact", "name_contact", "number_contact"};
         int[] to = {R.id.listview_image, R.id.listview_item_title, R.id.listview_item_description};
 
         simpleAdapter = new SimpleAdapter(getActivity(), aList, R.layout.item_contacts, from, to);
         listContacts.setAdapter(simpleAdapter);
+        listContacts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String uri = "tel:" + contactsFactory.contact.get(position).getNumberContact();
+                Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse(uri));
+                startActivity(callIntent);
+            }
+        });
         registerForContextMenu(listContacts);
     }
 
@@ -112,7 +110,7 @@ public class ContactsFragment extends Fragment {
         btnContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(),main.class);
+                Intent intent = new Intent(getActivity(),EditContact.class);
                 startActivity(intent);
             }
         });
@@ -128,7 +126,7 @@ public class ContactsFragment extends Fragment {
                                     ContextMenu.ContextMenuInfo menuInfo){
         if(v.getId() == R.id.listContacts){
             AdapterView.AdapterContextMenuInfo infoAdapter = (AdapterView.AdapterContextMenuInfo) menuInfo ;
-            menu.setHeaderTitle(listviewTitle[infoAdapter.position]);
+            menu.setHeaderTitle(contactsFactory.contact.get(infoAdapter.position).getNameContact());
             //Toast.makeText(this.getActivity(),listviewTitle[infoAdapter.position],Toast.LENGTH_LONG).show();
             for (int i = 0; i < menuItem.length ; i++) {
                 menu.add(Menu.NONE, i, i, menuItem[i]);

@@ -2,8 +2,10 @@ package a8.group.ttnm.x.controller;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.net.Uri;
 
+import java.io.File;
 import java.net.URISyntaxException;
 
 /**
@@ -31,5 +33,17 @@ public class Unity {
         }
 
         return null;
+    }
+
+    public static void audioPlayer(String path){
+        MediaPlayer mp = new MediaPlayer();
+
+        try {
+            mp.setDataSource(path);
+            mp.prepare();
+            mp.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

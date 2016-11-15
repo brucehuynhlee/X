@@ -7,6 +7,20 @@ import java.util.ArrayList;
  */
 
 public class ContactsFactory {
-    public static ArrayList<Contact> contact ;
+    public ArrayList<Contact> contact ;
+    private static ContactsFactory me = null ;
+    public ContactsFactory(){
+        contact = new ArrayList<Contact>();
+        contact.add(new Contact(1,"Nguyễn Văn A","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",null));
+        contact.add(new Contact(1,"Nguyễn Văn B","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",null));
+        contact.add(new Contact(1,"Nguyễn Văn C","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",null));
+        contact.add(new Contact(1,"Nguyễn Văn D","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",null));
 
+    }
+    public static ContactsFactory getInstanceContactsFactory(){
+        if(me == null){
+            me = new ContactsFactory();
+        }
+        return me ;
+    }
 }

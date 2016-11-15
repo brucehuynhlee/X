@@ -3,15 +3,22 @@ package a8.group.ttnm.x.controller;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaRecorder;
+import android.os.Environment;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class IncomingCallReceiver extends BroadcastReceiver {
     public IncomingCallReceiver() {
     }
-
+    MediaRecorder recorder;
+    File audiofile ;
     public static String TAG="IncomingCallReceiver";
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -20,6 +27,7 @@ public class IncomingCallReceiver extends BroadcastReceiver {
             Log.d(TAG,"IncomingCallReceiver**Call State=" + state);
 
             if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
+                if(recorder != null) recorder.stop();
                 Log.d(TAG,"IncomingCallReceiver**Idle");
             } else if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
                 // Incoming call
@@ -27,12 +35,40 @@ public class IncomingCallReceiver extends BroadcastReceiver {
                         intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
                 Log.d(TAG,"IncomingCallReceiver**Incoming call " + incomingNumber);
 
-                if (!killCall(context)) { // Using the method defined earlier
-                    Log.d(TAG,"IncomingCallReceiver **Unable to kill incoming call");
-                }
+                //if (!killCall(context)) { // Using the method defined earlier
+                //    Log.d(TAG,"IncomingCallReceiver **Unable to kill incoming call");
+                //}
 
             } else if (state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
-                Log.d(TAG,"IncomingCallReceiver **Offhook");
+                String out = new SimpleDateFormat("dd-MM-yyyy hh-mm-ss").format(new Date());
+                File sampleDir = new File(Environment.getExternalStorageDirectory(), "/TestRecordingDasa1");
+                if (!sampleDir.exists()) {
+                    sampleDir.mkdirs();
+                }
+                String file_name = "Record";
+                try {
+                    audiofile = File.createTempFile(file_name, ".amr", sampleDir);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+
+                recorder = new MediaRecorder();
+//                          recorder.setAudioSource(MediaRecorder.AudioSource.VOICE_CALL);
+
+                recorder.setAudioSource(MediaRecorder.AudioSource.VOICE_COMMUNICATION);
+                recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
+                recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+                recorder.setOutputFile(audiofile.getAbsolutePath());
+                try {
+                    recorder.prepare();
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                recorder.start();
+                //Log.d(TAG,"IncomingCallReceiver **Offhook");
             }
         } else if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
             // Outgoing call

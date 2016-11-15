@@ -4,8 +4,13 @@
     android:layout_height="match_parent"
     tools:context=".view.ContactsFragment">
 
+
     <ListView
+        android:background="@drawable/my_rect"
+        android:elevation="100dp"
         android:id="@+id/listContacts"
+        android:divider="#FFFFFF"
+        android:dividerHeight="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

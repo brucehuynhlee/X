@@ -40,9 +40,9 @@ public class PhoneCalling extends AppCompatActivity implements View.OnClickListe
         dialNum8.setOnClickListener(this);
         dialNum9 = (ImageButton)findViewById(R.id.dial_num_9);
         dialNum9.setOnClickListener(this);
-        dialBack = (ImageButton)findViewById(R.id.dial_back);
-        dialBack.setOnClickListener(this);
-        txtNumber = (EditText)findViewById(R.id.txtNumber);
+        //dialBack = (ImageButton)findViewById(R.id.dial_back);
+        //dialBack.setOnClickListener(this);
+        txtNumber = (EditText)findViewById(R.id.txtPhoneNumber);
         listOption = (ListView)findViewById(R.id.listOption);
     }
     @Override
@@ -98,14 +98,14 @@ public class PhoneCalling extends AppCompatActivity implements View.OnClickListe
             case R.id.dial_num_9:
                 number = number + "9";
                 break;
-            case R.id.dial_back:
+            /*case R.id.dial_back:
                 if(number.length()<=0) break;
                 StringBuilder builder = new StringBuilder(number);
                 int selectStart = txtNumber.getSelectionStart();
                 int selectEnd = txtNumber.getSelectionEnd();
                 builder.replace(selectStart-1,selectStart,"");
                 Toast.makeText(getApplicationContext(),selectStart + "and" + selectEnd + " bulier:" + builder.toString(),Toast.LENGTH_LONG).show();
-                number = builder.toString();
+                number = builder.toString();*/
 
 
         }

@@ -1,5 +1,9 @@
 package a8.group.ttnm.x.view;
 
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -10,13 +14,44 @@ import android.view.MenuItem;
 
 import a8.group.ttnm.x.controller.PagerAdapter;
 import a8.group.ttnm.x.R;
+import a8.group.ttnm.x.controller.RecognizeSpeechService;
+import a8.group.ttnm.x.controller.RecordPhoneCall.DeviceAdmin;
+import a8.group.ttnm.x.controller.RecordPhoneCall.RecordService;
 
 public class MainApp extends AppCompatActivity {
+
+    private static final int REQUEST_CODE = 0;
+    private DevicePolicyManager mDPM;
+    private ComponentName mAdminName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_app);
+
+        //Intent intents = new Intent(this, RecognizeSpeechService.class);
+        //startService(intents);
+
+        // device admin
+        try {
+            // Initiate DevicePolicyManager.
+            mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+            mAdminName = new ComponentName(this, DeviceAdmin.class);
+
+            if (!mDPM.isAdminActive(mAdminName)) {
+                Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+                intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, mAdminName);
+                intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "Click on Activate button to secure your application.");
+                startActivityForResult(intent, REQUEST_CODE);
+            } else {
+                // mDPM.lockNow();
+                // Intent intent = new Intent(MainActivity.this,
+                // TrackDeviceService.class);
+                // startService(intent);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);

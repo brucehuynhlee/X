@@ -19,6 +19,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 public class RecognizeSpeechService extends Service {
 
@@ -48,6 +49,8 @@ public class RecognizeSpeechService extends Service {
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
                 this.getPackageName());
+        mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+        Log.i(TAG,"onCreate");
     }
 
     protected static class IncomingHandler extends Handler
@@ -132,6 +135,7 @@ public class RecognizeSpeechService extends Service {
     @Override
     public void onDestroy()
     {
+        Log.i(TAG,"onDestroy");
         super.onDestroy();
 
         if (mIsCountDownOn)
@@ -207,7 +211,7 @@ public class RecognizeSpeechService extends Service {
         @Override
         public void onPartialResults(Bundle partialResults)
         {
-
+            Log.i(TAG,partialResults.describeContents()+"");
         }
 
         @Override
@@ -225,6 +229,16 @@ public class RecognizeSpeechService extends Service {
         @Override
         public void onResults(Bundle results)
         {
+            ArrayList<String> result = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+            if(result!=null) {  //when speaking timeout happen, results is null
+
+                // matches are the return values of speech recognition engine
+
+                if (result.size() > 0) {
+                    Log.d(TAG, "onResults : " + result.get(0).toString()); //$NON-NLS-1$
+                }
+
+            }
             Log.d(TAG, "onResults"); //$NON-NLS-1$
 
         }
