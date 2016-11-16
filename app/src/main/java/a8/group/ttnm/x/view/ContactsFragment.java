@@ -2,37 +2,34 @@ package a8.group.ttnm.x.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.HashMap;
+import android.widget.ExpandableListView;
 import java.util.List;
 
 import a8.group.ttnm.x.R;
-import a8.group.ttnm.x.controller.ContactsAdapter;
+import a8.group.ttnm.x.controller.ExpendableContactsAdapter;
 import a8.group.ttnm.x.model.Contact;
 import a8.group.ttnm.x.model.ContactsFactory;
-import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 
 /**
@@ -56,51 +53,20 @@ public class ContactsFragment extends Fragment {
     private static final String TAG = "LIST_CONTACTS";
     private static final int ADD_CONTACTS = 100;
     private static final int EDIT_CONTACTS = 101;
-    private static final int MENU_EDIT = 0;
-    private static final int MENU_DELETE = 1;
-    private static final String[] menuItem = {"Edit","Delete"};
+    private static final int MENU_CALL = 0;
+    private static final int MENU_EDIT = 1;
+    private static final int MENU_DELETE = 2;
+    private static final String[] menuItem = {"Call","Edit","Delete"};
     private FloatingActionButton btnContact ;
     private OnFragmentInteractionListener mListener;
     //ListView listContacts ;
-    RecyclerView listContacts ;
-    SimpleAdapter simpleAdapter;
-    List<HashMap<String, String>> aList ;
+    ExpandableListView listContacts ;
     ContactsFactory contactsFactory ;
-    ContactsAdapter contactsAdapter ;
+    //ContactsAdapter contactsAdapter ;
+    ExpendableContactsAdapter contactsAdapter ;
     List<Contact> listDataContact ;
 
-    int[] listviewImage = new int[]{
-            R.mipmap.profile, R.mipmap.profile,R.mipmap.profile, R.mipmap.profile,
-            R.mipmap.profile,R.mipmap.profile, R.mipmap.profile, R.mipmap.profile,
 
-    };
-
-    /*public void init(){
-        aList = new ArrayList<HashMap<String, String>>();
-        contactsFactory = ContactsFactory.getInstanceContactsFactory() ;
-        for (int i = 0; i < contactsFactory.contact.size(); i++) {
-            HashMap<String, String> hm = new HashMap<String, String>();
-            hm.put("profile_contact", Integer.toString(listviewImage[i]));
-            hm.put("name_contact", contactsFactory.contact.get(i).getNameContact());
-            hm.put("number_contact", contactsFactory.contact.get(i).getNumberContact());
-            aList.add(hm);
-        }
-
-        String[] from = {"profile_contact", "name_contact", "number_contact"};
-        int[] to = {R.id.listview_image, R.id.listview_item_title, R.id.listview_item_description};
-
-        simpleAdapter = new SimpleAdapter(getActivity(), aList, R.layout.item_contacts, from, to);
-        listContacts.setAdapter(simpleAdapter);
-        listContacts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String uri = "tel:" + contactsFactory.contact.get(position).getNumberContact();
-                Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse(uri));
-                startActivity(callIntent);
-            }
-        });
-        registerForContextMenu(listContacts);
-    }*/
 
 
     @Override
@@ -119,16 +85,16 @@ public class ContactsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_contacts, container, false);
         //listContacts = (ListView) view.findViewById(R.id.listContacts);
-        listContacts = (RecyclerView) view.findViewById(R.id.listContacts);
+        listContacts = (ExpandableListView) view.findViewById(R.id.listContacts);
+        DisplayMetrics metrics = new DisplayMetrics();
+        this.getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int width = metrics.widthPixels;
+        listContacts.setIndicatorBounds(width - GetPixelFromDips(50), width - GetPixelFromDips(10));
+
         listDataContact = ContactsFactory.getInstanceContactsFactory(this.getContext()).contact ;
-        contactsAdapter = new ContactsAdapter(this.getContext(),listDataContact);
-        //set layout
-        listContacts.setLayoutManager(new LinearLayoutManager(this.getContext()));
-        //add ItemDecoration
-        //listContacts.addItemDecoration(new DividerItemDecoration(getActivity(), R.drawable.divider));
-        listContacts.setHasFixedSize(true);
-        listContacts.setItemAnimator(new SlideInUpAnimator());
+        contactsAdapter = new ExpendableContactsAdapter(this.getContext(),listDataContact);
         listContacts.setAdapter(contactsAdapter);
+        listContacts.setOnChildClickListener(newChildClick);
 
         btnContact = (FloatingActionButton) view.findViewById(R.id.fabContacts);
         btnContact.setOnClickListener(new View.OnClickListener() {
@@ -140,16 +106,48 @@ public class ContactsFragment extends Fragment {
         });
 
 
-        //registerForContextMenu(listContacts);
+        registerForContextMenu(listContacts);
         return view;
     }
+
+    //method to expand all groups
+    private void expandAll() {
+        int count = contactsAdapter.getGroupCount();
+        for (int i = 0; i < count; i++){
+            listContacts.expandGroup(i);
+        }
+    }
+
+    //method to collapse all groups
+    private void collapseAll() {
+        int count = contactsAdapter.getGroupCount();
+        for (int i = 0; i < count; i++){
+            listContacts.collapseGroup(i);
+        }
+    }
+
+    ExpandableListView.OnChildClickListener newChildClick = new ExpandableListView.OnChildClickListener() {
+        @Override
+        public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+            switchMenu(groupPosition,childPosition);
+            return  true ;
+        }
+    };
+
+    public int GetPixelFromDips(float pixels) {
+        // Get the screen's density scale
+        final float scale = getResources().getDisplayMetrics().density;
+        // Convert the dps to pixels, based on density scale
+        return (int) (pixels * scale + 0.5f);
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == ADD_CONTACTS) {
             if(resultCode == Activity.RESULT_OK){
-                contactsAdapter.notifyItemChanged(contactsAdapter.getItemCount());
+                contactsAdapter.notifyDataSetChanged();
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 //Write your code if there's no result
@@ -162,9 +160,8 @@ public class ContactsFragment extends Fragment {
     public void onCreateContextMenu(ContextMenu menu, View v,
                                     ContextMenu.ContextMenuInfo menuInfo){
         if(v.getId() == R.id.listContacts){
-            AdapterView.AdapterContextMenuInfo infoAdapter = (AdapterView.AdapterContextMenuInfo) menuInfo ;
-            menu.setHeaderTitle(contactsFactory.contact.get(infoAdapter.position).getNameContact());
-            //Toast.makeText(this.getActivity(),listviewTitle[infoAdapter.position],Toast.LENGTH_LONG).show();
+            ExpandableListView.ExpandableListContextMenuInfo infoAdapter = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo ;
+            menu.setHeaderTitle(listDataContact.get((int)infoAdapter.packedPosition).getNameContact());
             for (int i = 0; i < menuItem.length ; i++) {
                 menu.add(Menu.NONE, i, i, menuItem[i]);
             }
@@ -173,22 +170,44 @@ public class ContactsFragment extends Fragment {
     }
     @Override
     public boolean onContextItemSelected(MenuItem menuItem){
-        AdapterView.AdapterContextMenuInfo infoItem = (AdapterView.AdapterContextMenuInfo)menuItem.getMenuInfo();
+        ExpandableListView.ExpandableListContextMenuInfo infoAdapter = (ExpandableListView.ExpandableListContextMenuInfo) menuItem.getMenuInfo() ;
         int indexMenuItem = menuItem.getItemId();
-        int indexContact = infoItem.position ;
+        int indexContact = (int)infoAdapter.packedPosition ;
+        switchMenu(indexContact,indexMenuItem);
+        return true;
+    }
+
+    private void switchMenu(int indexContact,int indexMenuItem){
+        Intent intent ;
         switch (indexMenuItem){
+            case MENU_CALL:
+                intent = new Intent(Intent.ACTION_DIAL,Uri.parse("Tel:"+listDataContact.get(indexContact).getNumberContact()));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                this.getActivity().startActivity(intent);
             case MENU_EDIT:
-                Intent intent = new Intent(this.getContext(),EditContact.class);
-                //intent.putExtra("contact",null);
+                intent = new Intent(this.getContext(),EditContact.class);
+                intent.putExtra("contact",listDataContact.get(indexContact));
                 startActivity(intent);
                 break;
             case MENU_DELETE:
-                //Toast.makeText(this.getActivity(),"show",Toast.LENGTH_LONG).show();
-                //aList.remove(indexContact);
-                //simpleAdapter.notifyDataSetChanged();
+                final int index = indexContact;
+                new AlertDialog.Builder(this.getContext())
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Liên hệ : " + listDataContact.get(indexContact).getNameContact() + "-" + listDataContact.get(indexContact).getNumberContact())
+                        .setMessage("Bạn muốn xóa liên hệ này không?")
+                        .setPositiveButton("Có", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                listDataContact.remove(index);
+                                contactsAdapter.notifyDataSetChanged();
+                                collapseAll();
+                            }
+                        })
+                        .setNegativeButton("Không", null)
+                        .show();
                 break;
         }
-        return true;
     }
 
 

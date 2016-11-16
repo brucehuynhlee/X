@@ -40,35 +40,53 @@ public class EditContact extends AppCompatActivity implements View.OnClickListen
     EditText nameContact ,  numberContact , emailContact , addressContact ;
     TextInputLayout layoutName , layoutEmail , layoutNumber ;
     Uri uriProfile ;
+    boolean fixed = false ;
     static final int FILE_CHOOSER = 100 ;
 
-    private void init(){
+    private void init(Contact contact){
         fab = (FloatingActionButton) findViewById(R.id.fabChooseImage);
+        fab.setOnClickListener(this);
         imageView = (ImageView)findViewById(R.id.imageView);
         nameContact = (EditText)findViewById(R.id.contact_name);
         numberContact = (EditText)findViewById(R.id.contact_number);
         emailContact = (EditText)findViewById(R.id.contact_email);
         addressContact = (EditText)findViewById(R.id.contact_address);
         spinnerMaterial = (MaterialBetterSpinner) findViewById(R.id.contact_group);
+        ArrayAdapter<String> adapterGroup = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item,groupContacts);
+        spinnerMaterial.setAdapter(adapterGroup);
 
-        layoutNumber = (TextInputLayout) findViewById(R.id.layoutNumber);
+        if(contact != null){
+            Log.d("HUYNH","contact not null");
+            imageView.setImageURI(contact.getUriImageContact());
+            nameContact.setText(contact.getNameContact());
+            numberContact.setText(contact.getNumberContact());
+            emailContact.setText(contact.getEmailContact());
+            addressContact.setText(contact.getAddressContact());
+
+        }
+        /*layoutNumber = (TextInputLayout) findViewById(R.id.layoutNumber);
         layoutNumber.setError("Bạn nhập vào không phải số");
         layoutName = (TextInputLayout) findViewById(R.id.layoutName);
         layoutName.setError("Bạn nhập vào không phải một tên");
         layoutEmail = (TextInputLayout) findViewById(R.id.layoutEmail);
-        layoutEmail.setError("Bạn nhập vào không phải địa chỉ Email");
+        layoutEmail.setError("Bạn nhập vào không phải địa chỉ Email");*/
     }
 
-    private void setListener(){
-        fab.setOnClickListener(this);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_contact);
-        init();
-        setListener();
+        Intent intent = getIntent();
+        if (!intent.hasExtra("contact")) {
+            this.setTitle("Thêm liên hệ");
+            init(null);
+        }
+        else {
+            fixed = true ;
+            this.setTitle("Sửa liên hệ");
+            init((Contact) intent.getParcelableExtra("contact"));
+        }
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
         //toolbar.setNavigationIcon(android.R.drawable.arrow_up_float);
@@ -76,9 +94,6 @@ public class EditContact extends AppCompatActivity implements View.OnClickListen
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-
-        ArrayAdapter<String> adapterGroup = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item,groupContacts);
-        spinnerMaterial.setAdapter(adapterGroup);
 
     }
 
@@ -98,6 +113,8 @@ public class EditContact extends AppCompatActivity implements View.OnClickListen
                 return true;
             case R.id.saveContact :
                 saveContact();
+                Intent intent = new Intent();
+                setResult(Activity.RESULT_OK,intent);
                 finish();
                 return true;
         }
@@ -112,10 +129,8 @@ public class EditContact extends AppCompatActivity implements View.OnClickListen
             case R.id.fabChooseImage:
                 showUploadImage();
                 break;
-
         }
     }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -152,11 +167,12 @@ public class EditContact extends AppCompatActivity implements View.OnClickListen
 
     private void saveContact(){
         Contact contact = new Contact();
-        contact.setIdContact(12);
         contact.setNumberContact(numberContact.getText().toString());
         contact.setNameContact(nameContact.getText().toString());
         contact.setUriImageContact(Unity.getUriToDrawable(this,R.mipmap.profile));
-        //Log.i("HUYNH",uriProfile.toString());
+        if (fixed){
+            ContactsFactory.getInstanceContactsFactory(this.getApplicationContext()).contact.remove(contact.getIdContact());
+        }
         ContactsFactory.getInstanceContactsFactory(this.getApplicationContext()).contact.add(contact);
     }
 

@@ -51,11 +51,6 @@ public class MainApp extends AppCompatActivity {
 
             }
         });
-
-
-        //Intent intents = new Intent(this, RecognizeSpeechService.class);
-        //startService(intents);
-
         // device admin
         /*try {
             // Initiate DevicePolicyManager.
@@ -81,12 +76,9 @@ public class MainApp extends AppCompatActivity {
         //setSupportActionBar(toolbar);
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        /**
-         * fix icon later
-         */
         tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.ic_menu_recent_history).setText("Lịch sử"));
         tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.ic_menu_call).setText("Danh bạ"));
-        tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.stat_notify_chat).setText("Hộp thư thoại"));
+        tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.stat_notify_chat).setText("Nhóm"));
         tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.star_big_on).setText("Yêu thích"));
         //tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.ic_menu_gallery).setText("Nhóm"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);

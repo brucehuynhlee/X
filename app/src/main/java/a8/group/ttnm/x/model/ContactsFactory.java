@@ -19,17 +19,17 @@ public class ContactsFactory {
         contact = new ArrayList<Contact>();
         Uri image = Unity.getUriToDrawable(context,R.mipmap.profile);
         contact.add(new Contact(1,"Nguyễn Văn A","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng", image));
-        contact.add(new Contact(1,"Nguyễn Văn B","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
-        contact.add(new Contact(1,"Nguyễn Văn C","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
-        contact.add(new Contact(1,"Nguyễn Văn D","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
-        contact.add(new Contact(1,"Nguyễn Văn A","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng", image));
-        contact.add(new Contact(1,"Nguyễn Văn B","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
-        contact.add(new Contact(1,"Nguyễn Văn C","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
-        contact.add(new Contact(1,"Nguyễn Văn D","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
-        contact.add(new Contact(1,"Nguyễn Văn A","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng", image));
-        contact.add(new Contact(1,"Nguyễn Văn B","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
-        contact.add(new Contact(1,"Nguyễn Văn C","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
-        contact.add(new Contact(1,"Nguyễn Văn D","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
+        contact.add(new Contact(2,"Nguyễn Văn B","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
+        contact.add(new Contact(3,"Nguyễn Văn C","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
+        contact.add(new Contact(4,"Nguyễn Văn D","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
+        contact.add(new Contact(5,"Nguyễn Văn E","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng", image));
+        contact.add(new Contact(6,"Nguyễn Văn F","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
+        contact.add(new Contact(7,"Nguyễn Văn G","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
+        contact.add(new Contact(8,"Nguyễn Văn H","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
+        contact.add(new Contact(9,"Nguyễn Văn I","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng", image));
+        contact.add(new Contact(10,"Nguyễn Văn K","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
+        contact.add(new Contact(11,"Nguyễn Văn L","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
+        contact.add(new Contact(12,"Nguyễn Văn M","01674953329","Hoàng Mai - Hà Nội","ng@gmail.com","Khách hàng",image));
 
     }
     public static ContactsFactory getInstanceContactsFactory(Context context){
