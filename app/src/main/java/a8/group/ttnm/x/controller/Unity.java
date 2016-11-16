@@ -1,9 +1,12 @@
 package a8.group.ttnm.x.controller;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.support.annotation.AnyRes;
+import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -46,4 +49,22 @@ public class Unity {
             e.printStackTrace();
         }
     }
+
+
+
+    /**
+     * get uri to drawable or any other resource type if u wish
+     * @param context - context
+     * @param drawableId - drawable res id
+     * @return - uri
+     */
+    public static final Uri getUriToDrawable(@NonNull Context context, @AnyRes int drawableId) {
+        Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+                "://" + context.getResources().getResourcePackageName(drawableId)
+                + '/' + context.getResources().getResourceTypeName(drawableId)
+                + '/' + context.getResources().getResourceEntryName(drawableId) );
+        return imageUri;
+    }
+
+
 }

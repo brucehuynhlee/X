@@ -9,31 +9,55 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 
+import java.util.List;
+
+import a8.group.ttnm.x.controller.AutoCompleteContactAdapter;
 import a8.group.ttnm.x.controller.PagerAdapter;
 import a8.group.ttnm.x.R;
 import a8.group.ttnm.x.controller.RecognizeSpeechService;
 import a8.group.ttnm.x.controller.RecordPhoneCall.DeviceAdmin;
 import a8.group.ttnm.x.controller.RecordPhoneCall.RecordService;
+import a8.group.ttnm.x.model.Contact;
+import a8.group.ttnm.x.model.ContactsFactory;
 
 public class MainApp extends AppCompatActivity {
 
     private static final int REQUEST_CODE = 0;
     private DevicePolicyManager mDPM;
     private ComponentName mAdminName;
-
+    AutoCompleteTextView autoContact ;
+    AutoCompleteContactAdapter autoContactAdapter ;
+    List<Contact> contacts ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_app);
+        contacts = ContactsFactory.getInstanceContactsFactory(this).contact ;
+        Log.d("HUYNH","contact size : " + contacts.size());
+        autoContact = (AutoCompleteTextView)findViewById(R.id.autoListContacts);
+        autoContact.setThreshold(1);
+        autoContactAdapter = new AutoCompleteContactAdapter(this,R.layout.activity_main_app,contacts);
+        autoContact.setAdapter(autoContactAdapter);
+        autoContact.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+        });
+
 
         //Intent intents = new Intent(this, RecognizeSpeechService.class);
         //startService(intents);
 
         // device admin
-        try {
+        /*try {
             // Initiate DevicePolicyManager.
             mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
             mAdminName = new ComponentName(this, DeviceAdmin.class);
@@ -51,7 +75,7 @@ public class MainApp extends AppCompatActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);

@@ -1,11 +1,17 @@
 package a8.group.ttnm.x.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,17 +19,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.SimpleAdapter;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import a8.group.ttnm.x.R;
-import a8.group.ttnm.x.main;
+import a8.group.ttnm.x.controller.ContactsAdapter;
+import a8.group.ttnm.x.model.Contact;
 import a8.group.ttnm.x.model.ContactsFactory;
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 
 /**
@@ -45,15 +54,20 @@ public class ContactsFragment extends Fragment {
     private String mParam2;
 
     private static final String TAG = "LIST_CONTACTS";
+    private static final int ADD_CONTACTS = 100;
+    private static final int EDIT_CONTACTS = 101;
     private static final int MENU_EDIT = 0;
     private static final int MENU_DELETE = 1;
     private static final String[] menuItem = {"Edit","Delete"};
     private FloatingActionButton btnContact ;
     private OnFragmentInteractionListener mListener;
-    ListView listContacts ;
+    //ListView listContacts ;
+    RecyclerView listContacts ;
     SimpleAdapter simpleAdapter;
     List<HashMap<String, String>> aList ;
     ContactsFactory contactsFactory ;
+    ContactsAdapter contactsAdapter ;
+    List<Contact> listDataContact ;
 
     int[] listviewImage = new int[]{
             R.mipmap.profile, R.mipmap.profile,R.mipmap.profile, R.mipmap.profile,
@@ -61,7 +75,7 @@ public class ContactsFragment extends Fragment {
 
     };
 
-    public void init(){
+    /*public void init(){
         aList = new ArrayList<HashMap<String, String>>();
         contactsFactory = ContactsFactory.getInstanceContactsFactory() ;
         for (int i = 0; i < contactsFactory.contact.size(); i++) {
@@ -86,7 +100,7 @@ public class ContactsFragment extends Fragment {
             }
         });
         registerForContextMenu(listContacts);
-    }
+    }*/
 
 
     @Override
@@ -99,25 +113,48 @@ public class ContactsFragment extends Fragment {
 
 
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_contacts, container, false);
-        listContacts = (ListView) view.findViewById(R.id.listContacts);
+        //listContacts = (ListView) view.findViewById(R.id.listContacts);
+        listContacts = (RecyclerView) view.findViewById(R.id.listContacts);
+        listDataContact = ContactsFactory.getInstanceContactsFactory(this.getContext()).contact ;
+        contactsAdapter = new ContactsAdapter(this.getContext(),listDataContact);
+        //set layout
+        listContacts.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        //add ItemDecoration
+        //listContacts.addItemDecoration(new DividerItemDecoration(getActivity(), R.drawable.divider));
+        listContacts.setHasFixedSize(true);
+        listContacts.setItemAnimator(new SlideInUpAnimator());
+        listContacts.setAdapter(contactsAdapter);
+
         btnContact = (FloatingActionButton) view.findViewById(R.id.fabContacts);
         btnContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(),EditContact.class);
-                startActivity(intent);
+                startActivityForResult(intent,ADD_CONTACTS);
             }
         });
 
-        // init all
-        init();
+
+        //registerForContextMenu(listContacts);
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == ADD_CONTACTS) {
+            if(resultCode == Activity.RESULT_OK){
+                contactsAdapter.notifyItemChanged(contactsAdapter.getItemCount());
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
     }
 
 
@@ -141,11 +178,14 @@ public class ContactsFragment extends Fragment {
         int indexContact = infoItem.position ;
         switch (indexMenuItem){
             case MENU_EDIT:
+                Intent intent = new Intent(this.getContext(),EditContact.class);
+                //intent.putExtra("contact",null);
+                startActivity(intent);
                 break;
             case MENU_DELETE:
                 //Toast.makeText(this.getActivity(),"show",Toast.LENGTH_LONG).show();
-                aList.remove(indexContact);
-                simpleAdapter.notifyDataSetChanged();
+                //aList.remove(indexContact);
+                //simpleAdapter.notifyDataSetChanged();
                 break;
         }
         return true;
