@@ -10,5 +10,11 @@
     <!-- Edit Phone Activity -->
     <dimen name="phone_edit">10dp</dimen>
     <dimen name="tableLayout">10dp</dimen>
-    <dimen name="textSizeEditPhone">30px</dimen>
+    <dimen name="textSizeEditPhone">20px</dimen>
+
+    <!-- detail contact -->
+    <dimen name="txtTitleSize">20dp</dimen>
+    <dimen name="txtDetailSize">15dp</dimen>
+    <dimen name="paddingLeft">20dp</dimen>
+    <dimen name="marginBottom">30dp</dimen>
 </resources>

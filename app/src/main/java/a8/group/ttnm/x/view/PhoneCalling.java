@@ -1,8 +1,12 @@
 package a8.group.ttnm.x.view;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,13 +15,17 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import a8.group.ttnm.x.R;
 
 public class PhoneCalling extends AppCompatActivity implements View.OnClickListener{
 
-    ImageButton dialNum0 , dialNum1, dialNum2 , dialNum3 , dialNum4 , dialNum5 ,dialNum6,dialNum7,dialNum8,dialNum9,dialBack , dialCall , dial_Delete ;
+    ArrayList<String> listOptions ;
+    ImageButton dialNum0 , dialNum1, dialNum2 , dialNum3 , dialNum4 , dialNum5 ,dialNum6,dialNum7,dialNum8,dialNum9, dialDelete ;
     EditText txtNumber ;
     ListView listOption ;
+    FloatingActionButton dialCall ;
     String number = "" ;
     private void init(){
         dialNum0 = (ImageButton)findViewById(R.id.dial_num_0);
@@ -40,10 +48,15 @@ public class PhoneCalling extends AppCompatActivity implements View.OnClickListe
         dialNum8.setOnClickListener(this);
         dialNum9 = (ImageButton)findViewById(R.id.dial_num_9);
         dialNum9.setOnClickListener(this);
-        //dialBack = (ImageButton)findViewById(R.id.dial_back);
-        //dialBack.setOnClickListener(this);
+        dialDelete = (ImageButton)findViewById(R.id.btnDeleteNumber);
+        dialDelete.setOnClickListener(this);
+        dialCall = (FloatingActionButton)findViewById(R.id.fabCalling);
+        dialCall.setOnClickListener(this);
+
         txtNumber = (EditText)findViewById(R.id.txtPhoneNumber);
-        listOption = (ListView)findViewById(R.id.listOption);
+        listOption = (ListView)findViewById(R.id.listOptions);
+
+
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,19 +68,26 @@ public class PhoneCalling extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        switch(number.length()){
-            case 4:
-                number = number + "-" ;
-                break;
-            case 8:
-                number = number + "-" ;
-                break;
-            case 12:
-                number = number + "-" ;
-                break;
-        }
         int view = v.getId() ;
+        if(view != R.id.btnDeleteNumber){
+            switch(number.length()){
+                case 4:
+                    number = number + "-" ;
+                    break;
+                case 8:
+                    number = number + "-" ;
+                    break;
+                case 12:
+                    number = number + "-" ;
+                    break;
+            }
+        }
         switch (view){
+            case R.id.fabCalling:
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                callIntent.setData(Uri.parse("tel:"+number.replaceAll("-","")));
+                startActivity(callIntent);
+                break;
             case R.id.dial_num_0:
                 number = number + "0";
                 break;
@@ -98,19 +118,21 @@ public class PhoneCalling extends AppCompatActivity implements View.OnClickListe
             case R.id.dial_num_9:
                 number = number + "9";
                 break;
-            /*case R.id.dial_back:
-                if(number.length()<=0) break;
-                StringBuilder builder = new StringBuilder(number);
-                int selectStart = txtNumber.getSelectionStart();
-                int selectEnd = txtNumber.getSelectionEnd();
-                builder.replace(selectStart-1,selectStart,"");
-                Toast.makeText(getApplicationContext(),selectStart + "and" + selectEnd + " bulier:" + builder.toString(),Toast.LENGTH_LONG).show();
-                number = builder.toString();*/
-
-
+            case R.id.btnDeleteNumber:
+                //Log.d("HUYNHbeforeDelete",number);
+                if(number.length() <= 0) break ;
+                StringBuilder tempNumber = new StringBuilder(number);
+                if(tempNumber.charAt(tempNumber.length()-1) == '-'){
+                    tempNumber.replace(tempNumber.length()-2,tempNumber.length(),"");
+                }
+                else tempNumber.replace(tempNumber.length()-1,tempNumber.length(),"");
+                number = tempNumber.toString();
+                //Log.d("HUYNHafterDelete",number);
+                break;
         }
         txtNumber.setText(number);
     }
+
     private void disableEditText(EditText editText) {
         editText.setFocusable(true);
         editText.setKeyListener(null);
