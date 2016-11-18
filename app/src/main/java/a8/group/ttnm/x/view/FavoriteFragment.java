@@ -4,21 +4,29 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
+
+import java.util.List;
 
 import a8.group.ttnm.x.R;
+import a8.group.ttnm.x.controller.ContactsAdapter;
+import a8.group.ttnm.x.controller.ExpendableContactsAdapter;
+import a8.group.ttnm.x.model.Contact;
+import a8.group.ttnm.x.model.ContactsFavorite;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link GroupFragment.OnFragmentInteractionListener} interface
+ * {@link FavoriteFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link GroupFragment#newInstance} factory method to
+ * Use the {@link FavoriteFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class GroupFragment extends Fragment {
+public class FavoriteFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,7 +38,7 @@ public class GroupFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public GroupFragment() {
+    public FavoriteFragment() {
         // Required empty public constructor
     }
 
@@ -40,11 +48,11 @@ public class GroupFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment GroupFragment.
+     * @return A new instance of fragment FavoriteFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static GroupFragment newInstance(String param1, String param2) {
-        GroupFragment fragment = new GroupFragment();
+    public static FavoriteFragment newInstance(String param1, String param2) {
+        FavoriteFragment fragment = new FavoriteFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -61,11 +69,21 @@ public class GroupFragment extends Fragment {
         }
     }
 
+    RecyclerView listFavorites;
+    //ContactsAdapter contactsAdapter ;
+    ContactsAdapter contactsAdapter;
+    List<Contact> listDataContact;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_group, container, false);
+        View v = inflater.inflate(R.layout.fragment_favorite, container, false);
+        listFavorites = (RecyclerView) v.findViewById(R.id.listFavorites);
+        listDataContact = ContactsFavorite.getInstanceContactsFavorite(getContext()).favoriteContacts;
+        contactsAdapter = new ContactsAdapter(this.getContext(),listDataContact);
+        listFavorites.setAdapter(contactsAdapter);
+        contactsAdapter.notifyDataSetChanged();
+        return v ;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

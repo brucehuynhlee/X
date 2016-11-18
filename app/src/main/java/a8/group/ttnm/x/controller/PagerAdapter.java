@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import a8.group.ttnm.x.view.CallHistoryFragment;
 import a8.group.ttnm.x.view.ContactsFragment;
-import a8.group.ttnm.x.view.GroupFragment;
+import a8.group.ttnm.x.view.FavoriteFragment;
 import a8.group.ttnm.x.view.VoiceMailFragment;
 
 /**
@@ -34,7 +34,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 VoiceMailFragment tab3 = new VoiceMailFragment();
                 return tab3;
             case 3:
-                GroupFragment tab4 = new GroupFragment();
+                FavoriteFragment tab4 = new FavoriteFragment();
                 return tab4;
             default:
                 return null;

@@ -17,4 +17,7 @@
     <dimen name="txtDetailSize">15dp</dimen>
     <dimen name="paddingLeft">20dp</dimen>
     <dimen name="marginBottom">30dp</dimen>
+
+    <dimen name="marginCardView">1dp</dimen>
+    <dimen name="heightCardView">60dp</dimen>
 </resources>

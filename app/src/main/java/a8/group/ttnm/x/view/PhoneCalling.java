@@ -1,9 +1,12 @@
 package a8.group.ttnm.x.view;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,45 +22,47 @@ import java.util.ArrayList;
 
 import a8.group.ttnm.x.R;
 
-public class PhoneCalling extends AppCompatActivity implements View.OnClickListener{
+public class PhoneCalling extends AppCompatActivity implements View.OnClickListener {
 
-    ArrayList<String> listOptions ;
-    ImageButton dialNum0 , dialNum1, dialNum2 , dialNum3 , dialNum4 , dialNum5 ,dialNum6,dialNum7,dialNum8,dialNum9, dialDelete ;
-    EditText txtNumber ;
-    ListView listOption ;
-    FloatingActionButton dialCall ;
-    String number = "" ;
-    private void init(){
-        dialNum0 = (ImageButton)findViewById(R.id.dial_num_0);
+    ArrayList<String> listOptions;
+    ImageButton dialNum0, dialNum1, dialNum2, dialNum3, dialNum4, dialNum5, dialNum6, dialNum7, dialNum8, dialNum9, dialDelete;
+    EditText txtNumber;
+    ListView listOption;
+    FloatingActionButton dialCall;
+    String number = "";
+
+    private void init() {
+        dialNum0 = (ImageButton) findViewById(R.id.dial_num_0);
         dialNum0.setOnClickListener(this);
-        dialNum1 = (ImageButton)findViewById(R.id.dial_num_1);
+        dialNum1 = (ImageButton) findViewById(R.id.dial_num_1);
         dialNum1.setOnClickListener(this);
-        dialNum2 = (ImageButton)findViewById(R.id.dial_num_2);
+        dialNum2 = (ImageButton) findViewById(R.id.dial_num_2);
         dialNum2.setOnClickListener(this);
-        dialNum3 = (ImageButton)findViewById(R.id.dial_num_3);
+        dialNum3 = (ImageButton) findViewById(R.id.dial_num_3);
         dialNum3.setOnClickListener(this);
-        dialNum4 = (ImageButton)findViewById(R.id.dial_num_4);
+        dialNum4 = (ImageButton) findViewById(R.id.dial_num_4);
         dialNum4.setOnClickListener(this);
-        dialNum5 = (ImageButton)findViewById(R.id.dial_num_5);
+        dialNum5 = (ImageButton) findViewById(R.id.dial_num_5);
         dialNum5.setOnClickListener(this);
-        dialNum6 = (ImageButton)findViewById(R.id.dial_num_6);
+        dialNum6 = (ImageButton) findViewById(R.id.dial_num_6);
         dialNum6.setOnClickListener(this);
-        dialNum7 = (ImageButton)findViewById(R.id.dial_num_7);
+        dialNum7 = (ImageButton) findViewById(R.id.dial_num_7);
         dialNum7.setOnClickListener(this);
-        dialNum8 = (ImageButton)findViewById(R.id.dial_num_8);
+        dialNum8 = (ImageButton) findViewById(R.id.dial_num_8);
         dialNum8.setOnClickListener(this);
-        dialNum9 = (ImageButton)findViewById(R.id.dial_num_9);
+        dialNum9 = (ImageButton) findViewById(R.id.dial_num_9);
         dialNum9.setOnClickListener(this);
-        dialDelete = (ImageButton)findViewById(R.id.btnDeleteNumber);
+        dialDelete = (ImageButton) findViewById(R.id.btnDeleteNumber);
         dialDelete.setOnClickListener(this);
-        dialCall = (FloatingActionButton)findViewById(R.id.fabCalling);
+        dialCall = (FloatingActionButton) findViewById(R.id.fabCalling);
         dialCall.setOnClickListener(this);
 
-        txtNumber = (EditText)findViewById(R.id.txtPhoneNumber);
-        listOption = (ListView)findViewById(R.id.listOptions);
+        txtNumber = (EditText) findViewById(R.id.txtPhoneNumber);
+        listOption = (ListView) findViewById(R.id.listOptions);
 
 
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,24 +73,27 @@ public class PhoneCalling extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        int view = v.getId() ;
-        if(view != R.id.btnDeleteNumber){
-            switch(number.length()){
+        int view = v.getId();
+        if (view != R.id.btnDeleteNumber) {
+            switch (number.length()) {
                 case 4:
-                    number = number + "-" ;
+                    number = number + "-";
                     break;
                 case 8:
-                    number = number + "-" ;
+                    number = number + "-";
                     break;
                 case 12:
-                    number = number + "-" ;
+                    number = number + "-";
                     break;
             }
         }
-        switch (view){
+        switch (view) {
             case R.id.fabCalling:
-                Intent callIntent = new Intent(Intent.ACTION_DIAL);
-                callIntent.setData(Uri.parse("tel:"+number.replaceAll("-","")));
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:" + number.replaceAll("-", "")));
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
                 startActivity(callIntent);
                 break;
             case R.id.dial_num_0:

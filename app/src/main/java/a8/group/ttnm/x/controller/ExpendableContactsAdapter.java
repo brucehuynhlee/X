@@ -30,6 +30,7 @@ public class ExpendableContactsAdapter extends BaseExpandableListAdapter{
         this.listContacts = listContacts ;
         listOptions = new ArrayList<ExpandListOption>();
         listOptions.add(new ExpandListOption(Unity.getUriToDrawable(mContext,android.R.drawable.ic_menu_call),"Gọi"));
+        listOptions.add(new ExpandListOption(Unity.getUriToDrawable(mContext,android.R.drawable.ic_menu_info_details),"Xem chi tiết"));
         listOptions.add(new ExpandListOption(Unity.getUriToDrawable(mContext,android.R.drawable.ic_menu_edit),"Sửa liên hệ"));
         listOptions.add(new ExpandListOption(Unity.getUriToDrawable(mContext,android.R.drawable.ic_menu_delete),"Xóa liên hệ"));
     }

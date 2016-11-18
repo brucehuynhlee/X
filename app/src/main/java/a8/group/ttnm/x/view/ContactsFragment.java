@@ -1,12 +1,15 @@
 package a8.group.ttnm.x.view;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -24,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ExpandableListView;
+
 import java.util.List;
 
 import a8.group.ttnm.x.R;
@@ -54,19 +58,17 @@ public class ContactsFragment extends Fragment {
     private static final int ADD_CONTACTS = 100;
     private static final int EDIT_CONTACTS = 101;
     private static final int MENU_CALL = 0;
-    private static final int MENU_EDIT = 1;
-    private static final int MENU_DELETE = 2;
-    private static final String[] menuItem = {"Call","Edit","Delete"};
-    private FloatingActionButton btnContact ;
+    private static final int MENU_DETAIL = 1;
+    private static final int MENU_EDIT = 2;
+    private static final int MENU_DELETE = 3;
+    private static final String[] menuItem = {"Gọi","Chi tiết", "Chỉnh sửa", "Xóa"};
+    private FloatingActionButton btnContact;
     private OnFragmentInteractionListener mListener;
     //ListView listContacts ;
-    ExpandableListView listContacts ;
-    ContactsFactory contactsFactory ;
+    ExpandableListView listContacts;
     //ContactsAdapter contactsAdapter ;
-    ExpendableContactsAdapter contactsAdapter ;
-    List<Contact> listDataContact ;
-
-
+    ExpendableContactsAdapter contactsAdapter;
+    List<Contact> listDataContact;
 
 
     @Override
@@ -79,6 +81,7 @@ public class ContactsFragment extends Fragment {
 
 
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -91,8 +94,8 @@ public class ContactsFragment extends Fragment {
         int width = metrics.widthPixels;
         listContacts.setIndicatorBounds(width - GetPixelFromDips(50), width - GetPixelFromDips(10));
 
-        listDataContact = ContactsFactory.getInstanceContactsFactory(this.getContext()).contact ;
-        contactsAdapter = new ExpendableContactsAdapter(this.getContext(),listDataContact);
+        listDataContact = ContactsFactory.getInstanceContactsFactory(this.getContext()).contact;
+        contactsAdapter = new ExpendableContactsAdapter(this.getContext(), listDataContact);
         listContacts.setAdapter(contactsAdapter);
         listContacts.setOnChildClickListener(newChildClick);
 
@@ -100,8 +103,8 @@ public class ContactsFragment extends Fragment {
         btnContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(),EditContact.class);
-                startActivityForResult(intent,ADD_CONTACTS);
+                Intent intent = new Intent(getActivity(), EditContact.class);
+                startActivityForResult(intent, ADD_CONTACTS);
             }
         });
 
@@ -113,7 +116,7 @@ public class ContactsFragment extends Fragment {
     //method to expand all groups
     private void expandAll() {
         int count = contactsAdapter.getGroupCount();
-        for (int i = 0; i < count; i++){
+        for (int i = 0; i < count; i++) {
             listContacts.expandGroup(i);
         }
     }
@@ -121,7 +124,7 @@ public class ContactsFragment extends Fragment {
     //method to collapse all groups
     private void collapseAll() {
         int count = contactsAdapter.getGroupCount();
-        for (int i = 0; i < count; i++){
+        for (int i = 0; i < count; i++) {
             listContacts.collapseGroup(i);
         }
     }
@@ -129,8 +132,8 @@ public class ContactsFragment extends Fragment {
     ExpandableListView.OnChildClickListener newChildClick = new ExpandableListView.OnChildClickListener() {
         @Override
         public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-            switchMenu(groupPosition,childPosition);
-            return  true ;
+            switchMenu(groupPosition, childPosition);
+            return true;
         }
     };
 
@@ -146,7 +149,7 @@ public class ContactsFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == ADD_CONTACTS) {
-            if(resultCode == Activity.RESULT_OK){
+            if (resultCode == Activity.RESULT_OK) {
                 contactsAdapter.notifyDataSetChanged();
             }
             if (resultCode == Activity.RESULT_CANCELED) {
@@ -158,32 +161,42 @@ public class ContactsFragment extends Fragment {
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
-                                    ContextMenu.ContextMenuInfo menuInfo){
-        if(v.getId() == R.id.listContacts){
-            ExpandableListView.ExpandableListContextMenuInfo infoAdapter = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo ;
-            menu.setHeaderTitle(listDataContact.get((int)infoAdapter.packedPosition).getNameContact());
-            for (int i = 0; i < menuItem.length ; i++) {
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        if (v.getId() == R.id.listContacts) {
+            ExpandableListView.ExpandableListContextMenuInfo infoAdapter = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
+            menu.setHeaderTitle(listDataContact.get((int) infoAdapter.packedPosition).getNameContact());
+            for (int i = 0; i < menuItem.length; i++) {
                 menu.add(Menu.NONE, i, i, menuItem[i]);
             }
         }
 
     }
+
     @Override
-    public boolean onContextItemSelected(MenuItem menuItem){
-        ExpandableListView.ExpandableListContextMenuInfo infoAdapter = (ExpandableListView.ExpandableListContextMenuInfo) menuItem.getMenuInfo() ;
+    public boolean onContextItemSelected(MenuItem menuItem) {
+        ExpandableListView.ExpandableListContextMenuInfo infoAdapter = (ExpandableListView.ExpandableListContextMenuInfo) menuItem.getMenuInfo();
         int indexMenuItem = menuItem.getItemId();
-        int indexContact = (int)infoAdapter.packedPosition ;
-        switchMenu(indexContact,indexMenuItem);
+        int indexContact = (int) infoAdapter.packedPosition;
+        switchMenu(indexContact, indexMenuItem);
         return true;
     }
 
-    private void switchMenu(int indexContact,int indexMenuItem){
-        Intent intent ;
-        switch (indexMenuItem){
+    private void switchMenu(int indexContact, int indexMenuItem) {
+        Intent intent;
+        switch (indexMenuItem) {
             case MENU_CALL:
-                intent = new Intent(Intent.ACTION_DIAL,Uri.parse("Tel:"+listDataContact.get(indexContact).getNumberContact()));
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                this.getActivity().startActivity(intent);
+                intent = new Intent(Intent.ACTION_CALL);
+                intent.setData(Uri.parse("tel:" + listDataContact.get(indexContact).getNumberContact()));
+                if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                getActivity().startActivity(intent);
+                break;
+            case MENU_DETAIL:
+                intent = new Intent(this.getContext(),DetailContactActivity.class);
+                intent.putExtra("contactDetail",listDataContact.get(indexContact));
+                getActivity().startActivity(intent);
+                break;
             case MENU_EDIT:
                 intent = new Intent(this.getContext(),EditContact.class);
                 intent.putExtra("contact",listDataContact.get(indexContact));
