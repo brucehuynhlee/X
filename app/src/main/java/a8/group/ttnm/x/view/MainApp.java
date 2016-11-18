@@ -4,11 +4,11 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,19 +16,31 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import a8.group.ttnm.x.controller.AutoCompleteContactAdapter;
 import a8.group.ttnm.x.controller.PagerAdapter;
 import a8.group.ttnm.x.R;
-import a8.group.ttnm.x.controller.RecognizeSpeechService;
-import a8.group.ttnm.x.controller.RecordPhoneCall.DeviceAdmin;
-import a8.group.ttnm.x.controller.RecordPhoneCall.RecordService;
 import a8.group.ttnm.x.model.Contact;
 import a8.group.ttnm.x.model.ContactsFactory;
+import edu.cmu.pocketsphinx.Assets;
+import edu.cmu.pocketsphinx.Hypothesis;
+import edu.cmu.pocketsphinx.RecognitionListener;
+import edu.cmu.pocketsphinx.SpeechRecognizer;
 
-public class MainApp extends AppCompatActivity {
+import static edu.cmu.pocketsphinx.SpeechRecognizerSetup.defaultSetup;
+
+public class MainApp extends AppCompatActivity implements RecognitionListener{
+
+    //Test recognize speech
+    private SpeechRecognizer recognizer;
+    private HashMap<String, Integer> captions;
+    private static final String CONTACT_FRAGMENT = "menu" ;
 
     private static final int REQUEST_CODE = 0;
     private DevicePolicyManager mDPM;
@@ -36,6 +48,7 @@ public class MainApp extends AppCompatActivity {
     AutoCompleteTextView autoContact ;
     AutoCompleteContactAdapter autoContactAdapter ;
     List<Contact> contacts ;
+    ViewPager viewPager ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,8 +99,8 @@ public class MainApp extends AppCompatActivity {
         //tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.ic_menu_gallery).setText("Nhóm"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        final PagerAdapter adapter = new PagerAdapter
+        viewPager = (ViewPager) findViewById(R.id.pager);
+        PagerAdapter adapter = new PagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -109,7 +122,33 @@ public class MainApp extends AppCompatActivity {
 
             }
         });
+
+
+        //run thread
+        new AsyncTask<Void, Void, Exception>() {
+            @Override
+            protected Exception doInBackground(Void... params) {
+                try {
+                    Assets assets = new Assets(MainApp.this);
+                    File assetDir = assets.syncAssets();
+                    setupRecognizer(assetDir);
+                } catch (IOException e) {
+                    return e;
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Exception result) {
+                if (result != null) {
+                    Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+                } else {
+                    switchCommand(CONTACT_FRAGMENT);
+                }
+            }
+        }.execute();
     }
+
 
     public void hideInputSoft(){
         View view = this.getCurrentFocus();
@@ -133,5 +172,118 @@ public class MainApp extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        recognizer.cancel();
+        recognizer.shutdown();
+    }
+
+    private void switchFragment(String txt){
+        switch (txt){
+            case "digits":
+                viewPager.setCurrentItem(1);
+                break;
+        }
+    }
+    /**
+     * In partial result we get quick updates about current hypothesis. In
+     * keyword spotting mode we can react here, in other modes we need to wait
+     * for final result in onResult.
+     */
+    @Override
+    public void onPartialResult(Hypothesis hypothesis) {
+        if (hypothesis == null)
+            return;
+
+        String text = hypothesis.getHypstr();
+        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+        //switchFragment(text);
+        if(text.equals("contact")){
+            viewPager.setCurrentItem(1);
+        }
+        switchCommand(CONTACT_FRAGMENT);
+
+    }
+
+    /**
+     * This callback is called when we stop the recognizer.
+     */
+    @Override
+    public void onResult(Hypothesis hypothesis) {
+        if (hypothesis != null) {
+            String text = hypothesis.getHypstr();
+            //Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onBeginningOfSpeech() {
+    }
+
+    /**
+     * We stop recognizer here to get a final result
+     */
+    @Override
+    public void onEndOfSpeech() {
+
+    }
+
+    private void switchCommand(String searchName) {
+        recognizer.stop();
+        // If we are not spotting, start listening with timeout (10000 ms or 10 seconds).
+        if (searchName.equals(CONTACT_FRAGMENT)){
+            recognizer.startListening(searchName,10000);
+        }
+        else
+            recognizer.startListening(searchName, 10000);
+
+    }
+
+    private void setupRecognizer(File assetsDir) throws IOException {
+        // The recognizer can be configured to perform multiple searches
+        // of different kind and switch between them
+
+        recognizer = defaultSetup()
+                .setAcousticModel(new File(assetsDir, "en-us-ptm"))
+                .setDictionary(new File(assetsDir, "cmudict-en-us.dict"))
+
+                // To disable logging of raw audio comment out this call (takes a lot of space on the device)
+                .setRawLogDir(assetsDir)
+
+                // Threshold to tune for keyphrase to balance between false alarms and misses
+                .setKeywordThreshold(1e-45f)
+
+                // Use context-independent phonetic search, context-dependent is too slow for mobile
+                .setBoolean("-allphone_ci", true)
+
+                .getRecognizer();
+        recognizer.addListener(this);
+
+        /** In your application you might not need to add all those searches.
+         * They are added here for demonstration. You can leave just one.
+         */
+
+        // Create keyword-activation search.
+        //recognizer.addKeyphraseSearch(KWS_SEARCH, KEYPHRASE);
+
+        // Create grammar-based search for selection between demos
+        File menuGrammar = new File(assetsDir, "menu.gram");
+        recognizer.addGrammarSearch(CONTACT_FRAGMENT, menuGrammar);
+
+
+
+    }
+
+    @Override
+    public void onError(Exception error) {
+
+    }
+
+    @Override
+    public void onTimeout() {
+
     }
 }

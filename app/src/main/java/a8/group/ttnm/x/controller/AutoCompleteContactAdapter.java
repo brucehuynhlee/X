@@ -25,6 +25,18 @@ public class AutoCompleteContactAdapter extends ArrayAdapter<Contact>{
     int resource ;
     List<Contact> contacts , tempContacts , suggestion ;
 
+    private void copyContacts(){
+        for (int i = 0 ; contacts.size() > i ; i++){
+            tempContacts = new ArrayList<Contact>();
+            Contact contact = new Contact();
+            contact.setNameContact(contacts.get(i).getNameContact());
+            contact.setNumberContact(contacts.get(i).getNumberContact());
+            contact.setIdContact(contacts.get(i).getIdContact());
+            contact.setAddressContact(contacts.get(i).getAddressContact());
+            contact.setEmailContact(contacts.get(i).getEmailContact());
+            tempContacts.add(contact);
+        }
+    }
     public AutoCompleteContactAdapter(Context context , int resource ,List<Contact> contacts){
         super(context,resource , contacts);
         this.contacts = contacts ;
@@ -32,7 +44,7 @@ public class AutoCompleteContactAdapter extends ArrayAdapter<Contact>{
         this.resource = resource ;
 
         // tạo mảng mới ko tham chiếu
-        tempContacts = new ArrayList<Contact>(contacts);
+        copyContacts();
         suggestion = new ArrayList<Contact>();
 
     }

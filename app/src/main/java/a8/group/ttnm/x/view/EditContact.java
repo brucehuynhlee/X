@@ -1,16 +1,12 @@
 package a8.group.ttnm.x.view;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,10 +19,9 @@ import android.widget.ImageView;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 
 import a8.group.ttnm.x.R;
-import a8.group.ttnm.x.controller.Unity;
+import a8.group.ttnm.x.controller.Test.Unity;
 import a8.group.ttnm.x.model.Contact;
 import a8.group.ttnm.x.model.ContactsFactory;
 

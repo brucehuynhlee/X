@@ -56,7 +56,7 @@
 
         <!-- Broadcast to recieve a call incoming -->
         <receiver
-            android:name=".controller.IncomingCallReceiver"
+            android:name=".controller.Test.IncomingCallReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter android:priority="0">

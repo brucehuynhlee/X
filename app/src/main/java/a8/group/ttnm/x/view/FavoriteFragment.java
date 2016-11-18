@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import a8.group.ttnm.x.R;
 import a8.group.ttnm.x.controller.ContactsAdapter;
 import a8.group.ttnm.x.controller.ExpendableContactsAdapter;
 import a8.group.ttnm.x.model.Contact;
+import a8.group.ttnm.x.model.ContactsFactory;
 import a8.group.ttnm.x.model.ContactsFavorite;
 
 /**
@@ -70,7 +72,6 @@ public class FavoriteFragment extends Fragment {
     }
 
     RecyclerView listFavorites;
-    //ContactsAdapter contactsAdapter ;
     ContactsAdapter contactsAdapter;
     List<Contact> listDataContact;
 
@@ -80,8 +81,10 @@ public class FavoriteFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_favorite, container, false);
         listFavorites = (RecyclerView) v.findViewById(R.id.listFavorites);
         listDataContact = ContactsFavorite.getInstanceContactsFavorite(getContext()).favoriteContacts;
+                //ContactsFavorite.getInstanceContactsFavorite(getContext()).favoriteContacts;
         contactsAdapter = new ContactsAdapter(this.getContext(),listDataContact);
         listFavorites.setAdapter(contactsAdapter);
+        listFavorites.setLayoutManager(new LinearLayoutManager(this.getContext()));
         contactsAdapter.notifyDataSetChanged();
         return v ;
     }

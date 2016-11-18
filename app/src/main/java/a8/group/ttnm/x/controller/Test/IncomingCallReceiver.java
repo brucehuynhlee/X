@@ -1,4 +1,4 @@
-package a8.group.ttnm.x.controller;
+package a8.group.ttnm.x.controller.Test;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="history">history</string>
+    <string name="contact">contact</string>
+    <string name="chat">chat</string>
+    <string name="favorite">favorite</string>
+</resources>
