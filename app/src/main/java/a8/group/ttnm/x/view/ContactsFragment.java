@@ -12,11 +12,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -25,7 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 
 import java.util.List;
@@ -99,6 +93,7 @@ public class ContactsFragment extends Fragment {
         listContacts.setAdapter(contactsAdapter);
         listContacts.setOnChildClickListener(newChildClick);
 
+
         btnContact = (FloatingActionButton) view.findViewById(R.id.fabContacts);
         btnContact.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,7 +109,7 @@ public class ContactsFragment extends Fragment {
     }
 
     //method to expand all groups
-    private void expandAll() {
+    public void expandAll() {
         int count = contactsAdapter.getGroupCount();
         for (int i = 0; i < count; i++) {
             listContacts.expandGroup(i);
@@ -122,12 +117,13 @@ public class ContactsFragment extends Fragment {
     }
 
     //method to collapse all groups
-    private void collapseAll() {
+    public void collapseAll() {
         int count = contactsAdapter.getGroupCount();
         for (int i = 0; i < count; i++) {
             listContacts.collapseGroup(i);
         }
     }
+
 
     ExpandableListView.OnChildClickListener newChildClick = new ExpandableListView.OnChildClickListener() {
         @Override
@@ -181,7 +177,7 @@ public class ContactsFragment extends Fragment {
         return true;
     }
 
-    private void switchMenu(int indexContact, int indexMenuItem) {
+    public void switchMenu(int indexContact, int indexMenuItem) {
         Intent intent;
         switch (indexMenuItem) {
             case MENU_CALL:
@@ -204,6 +200,7 @@ public class ContactsFragment extends Fragment {
                 break;
             case MENU_DELETE:
                 final int index = indexContact;
+                boolean checkDelete ;
                 new AlertDialog.Builder(this.getContext())
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setTitle("Liên hệ : " + listDataContact.get(indexContact).getNameContact() + "-" + listDataContact.get(indexContact).getNumberContact())

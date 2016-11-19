@@ -3,6 +3,8 @@
 grammar digits;
 
 <digit> = clear|
-          find ;
+          exit |
+             ok|
+          enter ;
 
 public <digits> = <digit>+;

@@ -1,12 +1,9 @@
 package a8.group.ttnm.x.view;
 
 import android.app.admin.DevicePolicyManager;
-import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.speech.RecognizerIntent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -19,44 +16,41 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
+
 
 import a8.group.ttnm.x.controller.AutoCompleteContactAdapter;
 import a8.group.ttnm.x.controller.PagerAdapter;
 import a8.group.ttnm.x.R;
 import a8.group.ttnm.x.controller.RecognizeServiceManager.SpeechRecognizerManager;
-import a8.group.ttnm.x.controller.Test.RecognizeSpeechService;
 import a8.group.ttnm.x.model.Contact;
 import a8.group.ttnm.x.model.ContactsFactory;
-import edu.cmu.pocketsphinx.Assets;
-import edu.cmu.pocketsphinx.Hypothesis;
-import edu.cmu.pocketsphinx.RecognitionListener;
-import edu.cmu.pocketsphinx.SpeechRecognizer;
 
-import static edu.cmu.pocketsphinx.SpeechRecognizerSetup.defaultSetup;
 
 public class MainApp extends AppCompatActivity implements SpeechRecognizerManager.OnGoogleResultListener,SpeechRecognizerManager.OnPocketResultListener{
 
-    private static final String CONTACT_FRAGMENT = "menu" ;
-    private static final int REQUEST_RECOGNIZE = 10000 ;
-
-    private static final int REQUEST_CODE = 0;
     private DevicePolicyManager mDPM;
     private ComponentName mAdminName;
     AutoCompleteTextView autoContact ;
     AutoCompleteContactAdapter autoContactAdapter ;
     List<Contact> contacts ;
     ViewPager viewPager ;
+    PagerAdapter pageAdapter ;
+    ContactsFragment contactsFragment;
+    CallHistoryFragment historyFragment ;
 
     // kernel recognize speech
     SpeechRecognizerManager mSpeechRecognize ;
     private static final String MENU = "menu";
+    private static final String MENU_SEARCH = "search";
+    private static final String MENU_HISTORY = "history";
+    private static final String MENU_CONTACT = "contact";
+    private static final String MENU_CHAT = "chat";
+    private static final String MENU_FAVORITE = "favorite";
+
+    private static final String CONTACT_OPTION = "contact option";
+    private static final String CONTACT_OPTION_DELETE_CONFIRM = "delete confirm";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +58,7 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
         setContentView(R.layout.activity_main_app);
 
         // init recognize speech virtual service
-        mSpeechRecognize = new SpeechRecognizerManager(this);
+        mSpeechRecognize = new SpeechRecognizerManager(this,MENU);
         mSpeechRecognize.setOnGoogleResultListener(this);
         mSpeechRecognize.setOnPocketResultListener(this);
 
@@ -82,8 +76,6 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
                 startActivity(intent);
             }
         });
-        // hide keyboard
-        hideInputSoft();
         // device admin
         /*try {
             // Initiate DevicePolicyManager.
@@ -107,17 +99,18 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.ic_menu_recent_history).setText("Lịch sử"));
-        tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.ic_menu_call).setText("Danh bạ"));
+        tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.ic_menu_call).setText("Danh bạ").setTag(MENU_CONTACT));
         tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.stat_notify_chat).setText("Hộp thư thoại"));
         tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.star_big_on).setText("Yêu thích"));
         //tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.ic_menu_gallery).setText("Nhóm"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         viewPager = (ViewPager) findViewById(R.id.pager);
-        PagerAdapter adapter = new PagerAdapter
+         pageAdapter = new PagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
-        viewPager.setAdapter(adapter);
+        viewPager.setAdapter(pageAdapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        viewPager.setOffscreenPageLimit(3);
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -136,6 +129,9 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
 
             }
         });
+        hideInputSoft();
+        autoContact.setCursorVisible(false);
+        Log.d("HUYNH","fragment"+(contactsFragment == null)+"");
 
     }
 
@@ -151,18 +147,33 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
     private boolean isInBackground = false ;
     @Override
     public void onPause(){
-        super.onPause();
         isInBackground = true ;
+        if(mSpeechRecognize != null && mSpeechRecognize.mPocketSphinxRecognizer != null)
+            mSpeechRecognize.mPocketSphinxRecognizer.cancel();
+        super.onPause();
     }
     @Override
     public void onStop(){
-        super.onStop();
         isInBackground = true ;
+        if(mSpeechRecognize != null && mSpeechRecognize.mPocketSphinxRecognizer != null)
+             mSpeechRecognize.mPocketSphinxRecognizer.cancel();
+        super.onStop();
     }
     @Override
     public void onResume(){
+        hideInputSoft();
+        if(isInBackground){
+            mSpeechRecognize.setPocketListening(MENU);
+            Toast.makeText(this,"get back main app",Toast.LENGTH_SHORT).show();
+        }
         super.onResume();
-        //hideInputSoft();
+    }
+
+    @Override
+    public void onDestroy(){
+        mSpeechRecognize.mPocketSphinxRecognizer.cancel();
+        mSpeechRecognize.mPocketSphinxRecognizer.shutdown();
+        super.onDestroy();
     }
 
 
@@ -187,61 +198,196 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
      // TODO Auto-generated method stub
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case REQUEST_RECOGNIZE: {
-                if (resultCode == RESULT_OK && null != data) {
 
-                    ArrayList<String> result = data
-                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    autoContact.setText(result.get(0));
-                }
-                break;
-            }
         }
 
     }
 
+     // get result google recognize
     @Override
     public void OnGoogleResult(String result) {
-            autoContact.setText(result);
-            mSpeechRecognize.setPocketListening("search");
+        switch(mSpeechRecognize.mPocketSphinxRecognizer.getSearchName()){
+            case MENU_SEARCH:
+                autoContact.setText(result);
+                mSpeechRecognize.setPocketListening(MENU_SEARCH);
+            case MENU:
+                mSpeechRecognize.setPocketListening(MENU);
+        }
     }
 
+    // get result pocket recognize
     @Override
     public void OnPocketResult(String result) {
-           switch (result){
-               case "search":
-                   autoContact.setCursorVisible(true);
-                   autoContact.setText("");
-                   mSpeechRecognize.setGoogleListening();
-                   return;
-               case "history":
-                   viewPager.setCurrentItem(0);
-                   break;
-               case "contact":
-                   viewPager.setCurrentItem(1);
-                   break;
-               case "chat":
-                   viewPager.setCurrentItem(2);
-                   break;
-               case "favorite":
-                   viewPager.setCurrentItem(3);
-                   break;
-           }
-        mSpeechRecognize.setPocketListening(MENU);
+        switch (mSpeechRecognize.mPocketSphinxRecognizer.getSearchName()){
+            case MENU:
+                switchMain(result);
+                break;
+            case MENU_SEARCH:
+                switchSearch(result);
+                break;
+            case MENU_CONTACT:
+                try{
+                    switchContact(result);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                break;
+            case CONTACT_OPTION:
+                try{
+                    switchOptionContact(result);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                break;
+            case CONTACT_OPTION_DELETE_CONFIRM:
+                switchConfirmDeleteContact(result);
+                break;
+        }
+
 
     }
 
 
 
-    /*private void switchCommand(String searchName) {
-        recognizer.stop();
-        // If we are not spotting, start listening with timeout (10000 ms or 10 seconds).
-        if (searchName.equals(CONTACT_FRAGMENT)){
-            recognizer.startListening(searchName,10000);
-        }
-        else
-            recognizer.startListening(searchName, 10000);
+    //menu level 1
+    private void switchMain(String result){
+        switch (result){
+            case MENU_SEARCH:
+                mSpeechRecognize.mPocketSphinxRecognizer.startListening(MENU_SEARCH);
+                break;
+            case MENU_HISTORY:
+                viewPager.setCurrentItem(0);
+                mSpeechRecognize.mPocketSphinxRecognizer.startListening(MENU_HISTORY);
+                break;
+            case MENU_CONTACT:
+                viewPager.setCurrentItem(1);
+                mSpeechRecognize.mPocketSphinxRecognizer.startListening(MENU_CONTACT);
+                break;
+            case MENU_CHAT:
+                viewPager.setCurrentItem(2);
+                mSpeechRecognize.mPocketSphinxRecognizer.startListening(MENU);
+                break;
+            case MENU_FAVORITE:
+                viewPager.setCurrentItem(3);
+                mSpeechRecognize.mPocketSphinxRecognizer.startListening(MENU);
+                break;
+            default:
+                mSpeechRecognize.mPocketSphinxRecognizer.startListening(MENU);
 
-    }*/
+        }
+    }
+
+    //menu level 2 search menu
+    private void switchSearch(String result){
+
+        switch (result){
+            case "enter":
+                autoContact.setCursorVisible(true);
+                autoContact.setText("");
+                mSpeechRecognize.setGoogleListening();
+                break;
+            case "clear":
+                autoContact.setCursorVisible(true);
+                autoContact.setText("");
+                mSpeechRecognize.setPocketListening(MENU_SEARCH);
+                break;
+            case "ok":
+                //break activity , not listening anymore
+                Intent intent = new Intent(getApplicationContext(),DetailContactActivity.class);
+                intent.putExtra("contactDetail",contacts.get(0));
+                startActivity(intent);
+                break;
+            case "exit":
+                autoContact.setCursorVisible(false);
+                mSpeechRecognize.setPocketListening(MENU_CONTACT);
+                break;
+            default:
+                mSpeechRecognize.mPocketSphinxRecognizer.startListening(MENU_SEARCH);
+        }
+    }
+
+    // menu level 3 contact menu
+    int contactPosition = 0 ;
+    private void switchContact(String result){
+        contactsFragment = (ContactsFragment) pageAdapter.getCurrentFragment() ;
+        int sizeContact = contactsFragment.listDataContact.size();
+        switch (result){
+            case "choose":
+                contactsFragment.collapseAll();
+                contactsFragment.listContacts.smoothScrollToPosition(contactPosition);
+                contactsFragment.listContacts.expandGroup(contactPosition);
+                mSpeechRecognize.setPocketListening(CONTACT_OPTION);
+                break;
+            case "move down":
+                contactsFragment.collapseAll();
+                autoContact.setCursorVisible(false);
+                autoContact.setText("");
+                if(sizeContact == contactPosition) {
+                    contactPosition = 0 ;
+                }else contactPosition ++ ;
+                contactsFragment.listContacts.smoothScrollToPosition(contactPosition);
+                mSpeechRecognize.setPocketListening(MENU_CONTACT);
+                break;
+            case "move up":
+                contactsFragment.collapseAll();
+                autoContact.setCursorVisible(false);
+                autoContact.setText("");
+                if(contactPosition == 0) contactPosition = sizeContact-1 ;
+                else contactPosition -- ;
+                contactsFragment.listContacts.smoothScrollToPosition(contactPosition);
+                mSpeechRecognize.setPocketListening(MENU_CONTACT);
+                break;
+            case "exit":
+                contactsFragment.collapseAll();
+                mSpeechRecognize.setPocketListening(MENU);
+                break;
+            default:
+                mSpeechRecognize.setPocketListening(MENU_CONTACT);
+
+        }
+    }
+
+    // menu level 4 Option contact
+    private void switchOptionContact(String result){
+
+        switch(result){
+            case "call":
+                contactsFragment.switchMenu(contactPosition,0);
+                break;
+            case "show":
+                contactsFragment.switchMenu(contactPosition,1);
+                break;
+            case "edit":
+                contactsFragment.switchMenu(contactPosition,2);
+                break;
+            case "delete":
+                contactsFragment.collapseAll();
+                Toast.makeText(this,"Nói yes nếu đồng ý , no nếu không đồng ý",Toast.LENGTH_SHORT).show();
+                mSpeechRecognize.setPocketListening(CONTACT_OPTION_DELETE_CONFIRM);
+                break;
+            case "exit":
+                contactsFragment.collapseAll();
+                mSpeechRecognize.setPocketListening(MENU_CONTACT);
+                break;
+            default:
+                mSpeechRecognize.setPocketListening(CONTACT_OPTION);
+                break;
+        }
+    }
+
+    // menu level 5 delete contact confirm menu
+    private void switchConfirmDeleteContact(String result){
+        switch(result) {
+            case "yes":
+                contactsFragment.listDataContact.remove(contactPosition);
+                contactsFragment.contactsAdapter.notifyDataSetChanged();
+                mSpeechRecognize.setPocketListening(MENU_CONTACT);
+                break;
+            case "no":
+                contactsFragment.collapseAll();
+                mSpeechRecognize.setPocketListening(MENU_CONTACT);
+                break;
+        }
+    }
 
 }

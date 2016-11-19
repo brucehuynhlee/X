@@ -1,0 +1,19 @@
+#JSGF V1.0;
+
+grammar numbers;
+
+public <number> =    zero|
+                    one|
+                    two|
+                    three|
+                     four |
+                     five|
+                     six|
+                     seven|
+                     eight|
+                     nine|
+                     call |
+                     clear|
+                     go back;
+
+public <numbers> = <number>+;

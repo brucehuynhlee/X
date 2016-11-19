@@ -31,9 +31,11 @@ public class SpeechRecognizerManager {
     private static final String KEYPHRASE = "main";
     private static final String MENU = "menu";
     private static final String SEARCH = "search";
-
-    private static final String SEARCH_CONTACTS = "Tìm kiếm liên hệ";
-    private static final String HISTORY_CONTACTS = "Lịch sử cuộc gọi";
+    private static final String CONTACTS = "contact";
+    private static final String CONTACT_OPTION = "contact option";
+    private static final String CONTACT_OPTION_DELETE_CONFIRM = "delete confirm";
+    private static final String PHONE_CALLING = "phone calling" ;
+    private String startCommand ;
 
 
     public edu.cmu.pocketsphinx.SpeechRecognizer mPocketSphinxRecognizer;
@@ -43,17 +45,20 @@ public class SpeechRecognizerManager {
     private Context mContext;
 
 
-    public SpeechRecognizerManager(Context context) {
+    public SpeechRecognizerManager(Context context,String startCommand) {
         this.mContext = context;
+        this.startCommand  = startCommand ;
         initGoogleSpeechRecognizer();
         initPockerSphinx();
     }
 
     public void setPocketListening(String keyWord){
+        mGoogleSpeechRecognizer.stopListening();
         mPocketSphinxRecognizer.startListening(keyWord);
 
     }
     public void setGoogleListening(){
+        mPocketSphinxRecognizer.cancel();
         mGoogleSpeechRecognizer.startListening(mSpeechRecognizerIntent);
     }
 
@@ -100,6 +105,17 @@ public class SpeechRecognizerManager {
                     mPocketSphinxRecognizer.addGrammarSearch(MENU, menuGrammar);
                     File searchGrammar = new File(assetDir, "search.gram");
                     mPocketSphinxRecognizer.addGrammarSearch(SEARCH, searchGrammar);
+                    File contactsGrammar = new File(assetDir, "contacts.gram");
+                    mPocketSphinxRecognizer.addGrammarSearch(CONTACTS, contactsGrammar);
+                    File contactOptionGrammar = new File(assetDir, "contact_option.gram");
+                    mPocketSphinxRecognizer.addGrammarSearch(CONTACT_OPTION, contactOptionGrammar);
+                    File contactDeleteConfirmGrammar = new File(assetDir, "contact_delete_confirm.gram");
+                    mPocketSphinxRecognizer.addGrammarSearch(CONTACT_OPTION_DELETE_CONFIRM, contactDeleteConfirmGrammar);
+
+                    // calling gram
+                    File phoneCallingGrammar = new File(assetDir, "phone_calling.gram");
+                    mPocketSphinxRecognizer.addGrammarSearch(PHONE_CALLING, phoneCallingGrammar);
+
                     mPocketSphinxRecognizer.addListener(new PocketSphinxRecognitionListener());
                 } catch (IOException e) {
                     return e;
@@ -110,9 +126,10 @@ public class SpeechRecognizerManager {
             @Override
             protected void onPostExecute(Exception result) {
                 if (result != null) {
-                    Toast.makeText(mContext, "Failed to init pocketSphinxRecognizer ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Failed to init pocketSphinxRecognizer:"+result.getMessage(), Toast.LENGTH_SHORT).show();
                 } else {
-                    restartSearch(MENU);
+                    Toast.makeText(mContext, "Sẵn sàng để sử dụng giọng nói", Toast.LENGTH_SHORT).show();
+                    restartSearch(startCommand);
                 }
             }
         }.execute();

@@ -42,13 +42,22 @@
 					android:orientation="horizontal"
 					android:layout_width="match_parent"
 					android:layout_height="60dp">
+					<ImageButton
+						style="?android:buttonBarButtonStyle"
+						android:layout_toLeftOf="@+id/txtPhoneNumber"
+						android:background="@color/colorBackGroundFinal"
+						android:layout_width="wrap_content"
+						android:layout_height="match_parent"
+						android:src="@android:drawable/ic_input_add"
+						android:layout_weight="1"
+						android:id="@+id/btnAddContact" />
 					<EditText
                         android:maxLength="16"
 						android:paddingTop="10px"
                         android:paddingBottom="10px"
                         android:paddingLeft="30px"
                         android:paddingRight="30px"
-						android:hint="huynh"
+						android:hint="Nhập số điện thoại"
                         android:textSize="18dp"
 						android:id="@+id/txtPhoneNumber"
 						android:layout_weight="3"

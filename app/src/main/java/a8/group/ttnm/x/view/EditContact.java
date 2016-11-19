@@ -95,6 +95,8 @@ public class EditContact extends AppCompatActivity implements View.OnClickListen
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_edit_contact, menu);
+        menu.findItem(R.id.saveContact).setTitle("Lưu");
+
         return true;
     }
 
@@ -104,12 +106,15 @@ public class EditContact extends AppCompatActivity implements View.OnClickListen
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
+                Intent intent = new Intent();
+                intent.putExtra("MainApp",true);
+                setResult(Activity.RESULT_OK, intent);
                 finish();
                 return true;
             case R.id.saveContact :
                 saveContact();
-                Intent intent = new Intent();
-                setResult(Activity.RESULT_OK,intent);
+                Intent intents = new Intent();
+                setResult(Activity.RESULT_OK,intents);
                 finish();
                 return true;
         }

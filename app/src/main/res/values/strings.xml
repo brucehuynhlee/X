@@ -5,4 +5,19 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_tryactivity">tryactivity</string>
+
+    <!-- Menu -->
+    <string name="menu">menu</string>
+    <string name="menu_search">search</string>
+    <string name="menu_history">history</string>
+    <string name="menu_chat">chat</string>
+    <string name="menu_favorite">favorite</string>
+
+    <!-- search -->
+    <string name="search_enter">enter</string>
+    <string name="search_ok">ok</string>
+    <string name="search_clear">clear</string>
+    <string name="search_exit">exit</string>
+
+
 </resources>

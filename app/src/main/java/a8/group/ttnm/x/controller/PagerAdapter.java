@@ -3,6 +3,7 @@ package a8.group.ttnm.x.controller;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.view.ViewGroup;
 
 import a8.group.ttnm.x.view.CallHistoryFragment;
 import a8.group.ttnm.x.view.ContactsFragment;
@@ -14,6 +15,20 @@ import a8.group.ttnm.x.view.VoiceMailFragment;
  */
 public class PagerAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs;
+
+    private Fragment mCurrentFragment;
+
+    public Fragment getCurrentFragment() {
+        return mCurrentFragment;
+    }
+
+    @Override
+    public void setPrimaryItem(ViewGroup container, int position, Object object) {
+        if (getCurrentFragment() != object) {
+            mCurrentFragment = ((Fragment) object);
+        }
+        super.setPrimaryItem(container, position, object);
+    }
 
     public PagerAdapter(FragmentManager fm, int NumOfTabs) {
         super(fm);

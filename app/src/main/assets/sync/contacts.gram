@@ -1,0 +1,10 @@
+#JSGF V1.0;
+
+grammar contact;
+
+<digit> = choose|
+          move down|
+          move up|
+          exit;
+
+public <contact> = <digit>+;
