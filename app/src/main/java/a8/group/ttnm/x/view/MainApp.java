@@ -1,10 +1,12 @@
 package a8.group.ttnm.x.view;
 
 import android.app.admin.DevicePolicyManager;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.speech.RecognizerIntent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -20,12 +22,16 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import a8.group.ttnm.x.controller.AutoCompleteContactAdapter;
 import a8.group.ttnm.x.controller.PagerAdapter;
 import a8.group.ttnm.x.R;
+import a8.group.ttnm.x.controller.RecognizeServiceManager.SpeechRecognizerManager;
+import a8.group.ttnm.x.controller.Test.RecognizeSpeechService;
 import a8.group.ttnm.x.model.Contact;
 import a8.group.ttnm.x.model.ContactsFactory;
 import edu.cmu.pocketsphinx.Assets;
@@ -35,12 +41,10 @@ import edu.cmu.pocketsphinx.SpeechRecognizer;
 
 import static edu.cmu.pocketsphinx.SpeechRecognizerSetup.defaultSetup;
 
-public class MainApp extends AppCompatActivity implements RecognitionListener{
+public class MainApp extends AppCompatActivity implements SpeechRecognizerManager.OnGoogleResultListener,SpeechRecognizerManager.OnPocketResultListener{
 
-    //Test recognize speech
-    private SpeechRecognizer recognizer;
-    private HashMap<String, Integer> captions;
     private static final String CONTACT_FRAGMENT = "menu" ;
+    private static final int REQUEST_RECOGNIZE = 10000 ;
 
     private static final int REQUEST_CODE = 0;
     private DevicePolicyManager mDPM;
@@ -49,10 +53,21 @@ public class MainApp extends AppCompatActivity implements RecognitionListener{
     AutoCompleteContactAdapter autoContactAdapter ;
     List<Contact> contacts ;
     ViewPager viewPager ;
+
+    // kernel recognize speech
+    SpeechRecognizerManager mSpeechRecognize ;
+    private static final String MENU = "menu";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_app);
+
+        // init recognize speech virtual service
+        mSpeechRecognize = new SpeechRecognizerManager(this);
+        mSpeechRecognize.setOnGoogleResultListener(this);
+        mSpeechRecognize.setOnPocketResultListener(this);
+
         contacts = ContactsFactory.getInstanceContactsFactory(this).contact ;
         Log.d("HUYNH","contact size : " + contacts.size());
         autoContact = (AutoCompleteTextView)findViewById(R.id.autoListContacts);
@@ -67,6 +82,8 @@ public class MainApp extends AppCompatActivity implements RecognitionListener{
                 startActivity(intent);
             }
         });
+        // hide keyboard
+        hideInputSoft();
         // device admin
         /*try {
             // Initiate DevicePolicyManager.
@@ -87,9 +104,6 @@ public class MainApp extends AppCompatActivity implements RecognitionListener{
         } catch (Exception e) {
             e.printStackTrace();
         }*/
-
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.ic_menu_recent_history).setText("Lịch sử"));
@@ -123,30 +137,6 @@ public class MainApp extends AppCompatActivity implements RecognitionListener{
             }
         });
 
-
-        //run thread
-        new AsyncTask<Void, Void, Exception>() {
-            @Override
-            protected Exception doInBackground(Void... params) {
-                try {
-                    Assets assets = new Assets(MainApp.this);
-                    File assetDir = assets.syncAssets();
-                    setupRecognizer(assetDir);
-                } catch (IOException e) {
-                    return e;
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Exception result) {
-                if (result != null) {
-                    Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
-                } else {
-                    switchCommand(CONTACT_FRAGMENT);
-                }
-            }
-        }.execute();
     }
 
 
@@ -157,6 +147,24 @@ public class MainApp extends AppCompatActivity implements RecognitionListener{
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
+
+    private boolean isInBackground = false ;
+    @Override
+    public void onPause(){
+        super.onPause();
+        isInBackground = true ;
+    }
+    @Override
+    public void onStop(){
+        super.onStop();
+        isInBackground = true ;
+    }
+    @Override
+    public void onResume(){
+        super.onResume();
+        //hideInputSoft();
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -175,63 +183,57 @@ public class MainApp extends AppCompatActivity implements RecognitionListener{
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        recognizer.cancel();
-        recognizer.shutdown();
-    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+     // TODO Auto-generated method stub
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_RECOGNIZE: {
+                if (resultCode == RESULT_OK && null != data) {
 
-    private void switchFragment(String txt){
-        switch (txt){
-            case "digits":
-                viewPager.setCurrentItem(1);
+                    ArrayList<String> result = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    autoContact.setText(result.get(0));
+                }
                 break;
+            }
         }
-    }
-    /**
-     * In partial result we get quick updates about current hypothesis. In
-     * keyword spotting mode we can react here, in other modes we need to wait
-     * for final result in onResult.
-     */
-    @Override
-    public void onPartialResult(Hypothesis hypothesis) {
-        if (hypothesis == null)
-            return;
 
-        String text = hypothesis.getHypstr();
-        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-        //switchFragment(text);
-        if(text.equals("contact")){
-            viewPager.setCurrentItem(1);
-        }
-        switchCommand(CONTACT_FRAGMENT);
-
-    }
-
-    /**
-     * This callback is called when we stop the recognizer.
-     */
-    @Override
-    public void onResult(Hypothesis hypothesis) {
-        if (hypothesis != null) {
-            String text = hypothesis.getHypstr();
-            //Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-        }
     }
 
     @Override
-    public void onBeginningOfSpeech() {
+    public void OnGoogleResult(String result) {
+            autoContact.setText(result);
+            mSpeechRecognize.setPocketListening("search");
     }
 
-    /**
-     * We stop recognizer here to get a final result
-     */
     @Override
-    public void onEndOfSpeech() {
+    public void OnPocketResult(String result) {
+           switch (result){
+               case "search":
+                   autoContact.setCursorVisible(true);
+                   autoContact.setText("");
+                   mSpeechRecognize.setGoogleListening();
+                   return;
+               case "history":
+                   viewPager.setCurrentItem(0);
+                   break;
+               case "contact":
+                   viewPager.setCurrentItem(1);
+                   break;
+               case "chat":
+                   viewPager.setCurrentItem(2);
+                   break;
+               case "favorite":
+                   viewPager.setCurrentItem(3);
+                   break;
+           }
+        mSpeechRecognize.setPocketListening(MENU);
 
     }
 
-    private void switchCommand(String searchName) {
+
+
+    /*private void switchCommand(String searchName) {
         recognizer.stop();
         // If we are not spotting, start listening with timeout (10000 ms or 10 seconds).
         if (searchName.equals(CONTACT_FRAGMENT)){
@@ -240,50 +242,6 @@ public class MainApp extends AppCompatActivity implements RecognitionListener{
         else
             recognizer.startListening(searchName, 10000);
 
-    }
+    }*/
 
-    private void setupRecognizer(File assetsDir) throws IOException {
-        // The recognizer can be configured to perform multiple searches
-        // of different kind and switch between them
-
-        recognizer = defaultSetup()
-                .setAcousticModel(new File(assetsDir, "en-us-ptm"))
-                .setDictionary(new File(assetsDir, "cmudict-en-us.dict"))
-
-                // To disable logging of raw audio comment out this call (takes a lot of space on the device)
-                .setRawLogDir(assetsDir)
-
-                // Threshold to tune for keyphrase to balance between false alarms and misses
-                .setKeywordThreshold(1e-45f)
-
-                // Use context-independent phonetic search, context-dependent is too slow for mobile
-                .setBoolean("-allphone_ci", true)
-
-                .getRecognizer();
-        recognizer.addListener(this);
-
-        /** In your application you might not need to add all those searches.
-         * They are added here for demonstration. You can leave just one.
-         */
-
-        // Create keyword-activation search.
-        //recognizer.addKeyphraseSearch(KWS_SEARCH, KEYPHRASE);
-
-        // Create grammar-based search for selection between demos
-        File menuGrammar = new File(assetsDir, "menu.gram");
-        recognizer.addGrammarSearch(CONTACT_FRAGMENT, menuGrammar);
-
-
-
-    }
-
-    @Override
-    public void onError(Exception error) {
-
-    }
-
-    @Override
-    public void onTimeout() {
-
-    }
 }

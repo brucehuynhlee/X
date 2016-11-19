@@ -88,7 +88,7 @@ public class AutoCompleteContactAdapter extends ArrayAdapter<Contact>{
             if (constraint != null) {
                 suggestion.clear();
                 for (Contact contact : contacts) {
-                    if(constraint.toString().equals(" ")) suggestion.add(contact);
+                    if(constraint.toString().equals("")) suggestion.add(contact);
                     else if (contact.getNameContact().toLowerCase().contains(constraint.toString().toLowerCase())) {
                         suggestion.add(contact);
                     }

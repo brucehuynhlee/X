@@ -40,6 +40,7 @@ public class RecognizeSpeechService extends Service {
     @Override
     public void onCreate()
     {
+        Log.d("HUYNH","create");
         super.onCreate();
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);

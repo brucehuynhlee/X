@@ -26,13 +26,12 @@
                 android:id="@+id/autoListContacts"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
+                android:cursorVisible="false"
                 android:completionThreshold="1"
                 android:hint="Nhập thông tin liên hệ"
                 android:background="@android:color/transparent"
                 android:drawableRight="@android:drawable/ic_menu_search"
                 android:ems="10" >
-
-                <requestFocus />
             </AutoCompleteTextView>
         </android.support.v7.widget.CardView>
         <android.support.design.widget.TabLayout

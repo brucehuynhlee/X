@@ -2,7 +2,8 @@
 
 grammar menu;
 
-public <item> = history |
-                contact |
-                   chat |
-                favorite;
+public <item> =     search|
+                  history |
+                  contact |
+                     chat |
+                  favorite;

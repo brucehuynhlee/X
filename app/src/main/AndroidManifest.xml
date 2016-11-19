@@ -54,7 +54,7 @@
 
         </activity>
 
-        <!-- Broadcast to recieve a call incoming -->
+        <!-- Broadcast to recieve a call incoming
         <receiver
             android:name=".controller.Test.IncomingCallReceiver"
             android:enabled="true"
@@ -63,9 +63,9 @@
                 <action android:name="android.intent.action.PHONE_STATE" />
                 <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
             </intent-filter>
-        </receiver>
+        </receiver>-->
 
-        <receiver
+        <!--<receiver
             android:name=".controller.RecordPhoneCall.DeviceAdmin"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <meta-data
@@ -79,16 +79,16 @@
                 <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
                 <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
             </intent-filter>
-        </receiver>
+        </receiver>-->
 
         <!--
         <service android:name=".controller.RecordPhoneCall.RecordService" >
         </service>
-         <service
+        -->
+        <service
             android:name=".controller.RecognizeSpeechService"
             android:enabled="true"
             android:exported="true" />
-        -->
     </application>
 
 </manifest>
