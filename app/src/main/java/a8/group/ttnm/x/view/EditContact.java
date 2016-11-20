@@ -37,8 +37,11 @@ public class EditContact extends AppCompatActivity implements View.OnClickListen
     Uri uriProfile ;
     boolean fixed = false ;
     static final int FILE_CHOOSER = 100 ;
+    Contact contact = null ;
 
-    private void init(Contact contact){
+    private void init(){
+        Intent intent = getIntent();
+        contact = intent.getParcelableExtra("contact");
         fab = (FloatingActionButton) findViewById(R.id.fabChooseImage);
         fab.setOnClickListener(this);
         imageView = (ImageView)findViewById(R.id.imageView);
@@ -72,15 +75,14 @@ public class EditContact extends AppCompatActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_contact);
-        Intent intent = getIntent();
-        if (!intent.hasExtra("contact")) {
+        if (contact == null) {
             this.setTitle("Thêm liên hệ");
-            init(null);
+            init();
         }
         else {
             fixed = true ;
             this.setTitle("Sửa liên hệ");
-            init((Contact) intent.getParcelableExtra("contact"));
+            init();
         }
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
@@ -113,6 +115,8 @@ public class EditContact extends AppCompatActivity implements View.OnClickListen
                 return true;
             case R.id.saveContact :
                 saveContact();
+                ContactsFactory.getInstanceContactsFactory(this.getApplicationContext()).removeContact(contact);
+                ContactsFactory.getInstanceContactsFactory(this.getApplicationContext()).sortListContact();
                 Intent intents = new Intent();
                 setResult(Activity.RESULT_OK,intents);
                 finish();

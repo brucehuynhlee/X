@@ -7,7 +7,7 @@
 
 
         <ExpandableListView
-            android:background="?android:attr/activatedBackgroundIndicator"
+            android:background="?android:attr/selectableItemBackground"
             android:choiceMode="singleChoice"
             android:id="@+id/listContacts"
             android:layout_width="match_parent"

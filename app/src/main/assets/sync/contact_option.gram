@@ -6,6 +6,6 @@ grammar digits;
           show|
           edit|
           delete|
-          exit;
+          back;
 
 public <digits> = <digit>+;

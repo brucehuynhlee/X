@@ -2,8 +2,10 @@
 
 grammar menu;
 
-public <item> =     search|
+public <item> =     call  |
+                    search|
                   history |
                   contact |
                      chat |
                   favorite;
+

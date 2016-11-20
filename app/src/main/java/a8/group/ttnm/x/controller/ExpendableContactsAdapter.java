@@ -8,12 +8,15 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import a8.group.ttnm.x.R;
 import a8.group.ttnm.x.controller.Test.Unity;
 import a8.group.ttnm.x.model.Contact;
+import a8.group.ttnm.x.model.ContactsFactory;
 import a8.group.ttnm.x.model.ExpandListOption;
 
 /**
@@ -28,6 +31,7 @@ public class ExpendableContactsAdapter extends BaseExpandableListAdapter{
 
     public ExpendableContactsAdapter(Context mContext , List<Contact> listContacts){
         this.mContext = mContext ;
+        Collections.sort(listContacts);
         this.listContacts = listContacts ;
         listOptions = new ArrayList<ExpandListOption>();
         listOptions.add(new ExpandListOption(Unity.getUriToDrawable(mContext,android.R.drawable.ic_menu_call),"Gọi"));
@@ -49,7 +53,13 @@ public class ExpendableContactsAdapter extends BaseExpandableListAdapter{
 
     @Override
     public Object getGroup(int groupPosition) {
-        return listContacts.get(groupPosition);
+        try{
+            return listContacts.get(groupPosition);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ContactsFactory.getInstanceContactsFactory(mContext).contact.get(groupPosition);
+        }
+
     }
 
     @Override

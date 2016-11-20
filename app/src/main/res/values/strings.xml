@@ -19,5 +19,16 @@
     <string name="search_clear">clear</string>
     <string name="search_exit">exit</string>
 
+    <!-- Guidline -->
+
+    <string name="Menu">Các lệnh hiện có : Call - Search - History - Contact - Chat - Favorite</string>
+    <string name="Menu_Call">Các lệnh hiện có : Call - Clear - Go back - One - Two - Three - Four - Five - Six - Seven - Eight - Nine - Ten</string>
+    <string name="Menu_Search">Các lệnh hiện có : Enter - Clear - exit - ok</string>
+    <string name="Menu_Contact">Các lệnh hiện có : choose - move up - move down - go back</string>
+    <string name="Contact_Option">Call - Show - Edit - Delete - Go back</string>
+    <string name="Delete_Option">Yes - No </string>
+
+    <string name="Error_Init">Ứng dụng có lỗi,vui lòng khởi động lại ứng dụng(tháo lắp lại tai nghe), và có thể xóa dữ liệu của ứng dụng</string>
+
 
 </resources>

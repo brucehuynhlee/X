@@ -8,7 +8,7 @@ import android.os.Parcelable;
  * Created by LittleDragon on 11/11/2016.
  */
 
-public class Contact implements Parcelable{
+public class Contact implements Parcelable,Comparable<Contact>{
 
     private int idContact ;
     private String nameContact ;
@@ -126,4 +126,16 @@ public class Contact implements Parcelable{
         groupContact = dest.readString();
         uriImageContact = Uri.parse(dest.readString());
     }
+
+    @Override
+    public String toString(){
+        return getNameContact();
+    }
+
+    @Override
+    public int compareTo(Contact contact) {
+        return getNameContact().compareTo(contact.getNameContact()) ;
+    }
+
+
 }

@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import a8.group.ttnm.x.R;
 import edu.cmu.pocketsphinx.Assets;
 import edu.cmu.pocketsphinx.Hypothesis;
 import edu.cmu.pocketsphinx.RecognitionListener;
@@ -109,7 +110,7 @@ public class SpeechRecognizerManager {
                     mPocketSphinxRecognizer.addGrammarSearch(CONTACTS, contactsGrammar);
                     File contactOptionGrammar = new File(assetDir, "contact_option.gram");
                     mPocketSphinxRecognizer.addGrammarSearch(CONTACT_OPTION, contactOptionGrammar);
-                    File contactDeleteConfirmGrammar = new File(assetDir, "contact_delete_confirm.gram");
+                    File contactDeleteConfirmGrammar = new File(assetDir, "contact_option_delete_confirm.gram");
                     mPocketSphinxRecognizer.addGrammarSearch(CONTACT_OPTION_DELETE_CONFIRM, contactDeleteConfirmGrammar);
 
                     // calling gram
@@ -126,7 +127,7 @@ public class SpeechRecognizerManager {
             @Override
             protected void onPostExecute(Exception result) {
                 if (result != null) {
-                    Toast.makeText(mContext, "Failed to init pocketSphinxRecognizer:"+result.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, mContext.getString(R.string.Error_Init) , Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(mContext, "Sẵn sàng để sử dụng giọng nói", Toast.LENGTH_SHORT).show();
                     restartSearch(startCommand);
@@ -187,8 +188,7 @@ public class SpeechRecognizerManager {
 
 
             String text = hypothesis.getHypstr();
-            Toast.makeText(mContext,"Bạn nói :"+text,Toast.LENGTH_SHORT).show();
-            // bắt đầu
+            Toast.makeText(mContext,"Bạn nói: "+text,Toast.LENGTH_SHORT).show();
             mPocketSphinxRecognizer.cancel();
             onPocketResultListener.OnPocketResult(text);
         }
@@ -254,6 +254,7 @@ public class SpeechRecognizerManager {
                 mPocketSphinxRecognizer.startListening(MENU);
 
             }
+            mPocketSphinxRecognizer.startListening(MENU);
         }
 
         @Override

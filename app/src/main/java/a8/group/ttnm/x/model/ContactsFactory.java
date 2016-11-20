@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import a8.group.ttnm.x.R;
 import a8.group.ttnm.x.controller.Test.Unity;
@@ -38,4 +39,18 @@ public class ContactsFactory {
         }
         return me ;
     }
+
+    public void removeContact(Contact contact1){
+        for(int i = 0 ;  i < contact.size() ; i++){
+            if(contact1.compareTo(contact.get(i))== 0){
+                contact.remove(i);
+                return;
+            }
+        }
+    }
+    public void sortListContact(){
+        if(contact != null && contact.size() > 0)
+             Collections.sort(contact);
+    }
+
 }

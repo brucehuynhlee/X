@@ -2,7 +2,7 @@
 
 grammar numbers;
 
-public <number> =    zero|
+public <number> =   zero|
                     one|
                     two|
                     three|
@@ -13,7 +13,9 @@ public <number> =    zero|
                      eight|
                      nine|
                      call |
-                     clear|
-                     go back;
+                     clear |
+                     undo |
+                     google |
+                     back;
 
 public <numbers> = <number>+;

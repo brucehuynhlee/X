@@ -71,6 +71,13 @@ public class FavoriteFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onResume(){
+        if(contactsAdapter != null)
+            contactsAdapter.notifyDataSetChanged();
+        super.onResume();
+    }
+
     RecyclerView listFavorites;
     ContactsAdapter contactsAdapter;
     List<Contact> listDataContact;
@@ -81,7 +88,7 @@ public class FavoriteFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_favorite, container, false);
         listFavorites = (RecyclerView) v.findViewById(R.id.listFavorites);
         listDataContact = ContactsFavorite.getInstanceContactsFavorite(getContext()).favoriteContacts;
-                //ContactsFavorite.getInstanceContactsFavorite(getContext()).favoriteContacts;
+                //ContactsFactory.getInstanceContactsFactory(this.getContext()).contact ;
         contactsAdapter = new ContactsAdapter(this.getContext(),listDataContact);
         listFavorites.setAdapter(contactsAdapter);
         listFavorites.setLayoutManager(new LinearLayoutManager(this.getContext()));

@@ -95,8 +95,11 @@ public class PhoneCalling extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onResume(){
         if(isInBackground){
-            speechRecognizerManager.setPocketListening(PHONE_CALLING);
-            Toast.makeText(this,"get back main app",Toast.LENGTH_SHORT).show();
+            try{
+                speechRecognizerManager.setPocketListening(PHONE_CALLING);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
         super.onResume();
     }
@@ -189,8 +192,43 @@ public class PhoneCalling extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void OnGoogleResult(String result) {
-
+        try {
+            Toast.makeText(this,"Bạn nói : " + result,Toast.LENGTH_SHORT).show();
+            number = result ;
+            txtNumber.setText(result);
+            //splitToNumber(result);
+        }catch (Exception e){
+            Toast.makeText(this,"Bạn nói không phải là một số : " + result,Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+        speechRecognizerManager.setPocketListening(PHONE_CALLING);
     }
+
+    /*public void splitToNumber(String result){
+        String[] strNumber = result.split(" ");
+        for(int i = 0 ; i < strNumber.length ; i++){
+            char c = convertStringtoNumber(strNumber[i]);
+            if(c == 'c') continue;
+            number = number + c;
+        }
+        txtNumber.setText(number);
+    }
+
+    public char convertStringtoNumber(String number){
+        switch (number){
+            case "không": return '0';
+            case "một": return '1';
+            case "hai": return '2';
+            case "ba": return '3';
+            case "bốn": return '4';
+            case "năm": return '5';
+            case "sáu": return '6';
+            case "bảy": return '7';
+            case "tám": return '8';
+            case "chín": return '9';
+        }
+        return 'c' ;
+    }*/
 
     private void phoneCall(){
         Intent callIntent = new Intent(Intent.ACTION_CALL);
@@ -264,21 +302,31 @@ public class PhoneCalling extends AppCompatActivity implements View.OnClickListe
             case "nine":
                 enterNumber('9');
                 break;
-            case "clear":
+            case "undo":
                 deleteNumber();
+                break;
+            case "clear":
+                txtNumber.setText("");
+                number = "" ;
                 break;
             case "call":
                 phoneCall();
                 break;
-            case "go back":
+            case "back":
                 try{
+                    finish();
                     speechRecognizerManager.mPocketSphinxRecognizer.cancel();
                     speechRecognizerManager.mPocketSphinxRecognizer.shutdown();
                 }catch (Exception e){
                     Log.d("HUYNH","calling back error");
+                }finally {
                 }
-                finish();
-                break;
+                return;
+            case "google":
+                //splitToNumber("một hai ba bốn năm sáu năm");
+                speechRecognizerManager.setGoogleListening();
+                return;
+
         }
         speechRecognizerManager.setPocketListening(PHONE_CALLING);
     }

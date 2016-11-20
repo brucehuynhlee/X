@@ -18,6 +18,7 @@ public class DetailContactActivity extends AppCompatActivity {
     Contact contact = null ;
     TextView detailName , detailNumber , detailMail , detailAddress ;
     ImageButton addFavorite ;
+    boolean check = false ;
     private void init(){
          detailAddress = (TextView)findViewById(R.id.detailAddress);
          detailMail = (TextView)findViewById(R.id.detailMail);
@@ -27,8 +28,15 @@ public class DetailContactActivity extends AppCompatActivity {
          addFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addFavorite.setImageResource(android.R.drawable.star_big_on);
-                ContactsFavorite.getInstanceContactsFavorite(getApplicationContext()).favoriteContacts.add(contact);
+                if(check){
+                    check = false ;
+                   addFavorite.setImageResource(android.R.drawable.star_big_off);
+                   ContactsFavorite.getInstanceContactsFavorite(getApplicationContext()).removeContact(contact);
+                }else{
+                    check = true ;
+                    addFavorite.setImageResource(android.R.drawable.star_big_on);
+                    ContactsFavorite.getInstanceContactsFavorite(getApplicationContext()).favoriteContacts.add(contact);
+                }
             }
          });
     }
@@ -39,6 +47,10 @@ public class DetailContactActivity extends AppCompatActivity {
             detailName.setText(contact.getNameContact());
             detailMail.setText(contact.getEmailContact());
             detailAddress.setText(contact.getAddressContact());
+            if(ContactsFavorite.getInstanceContactsFavorite(this.getApplication()).checkContact(contact)){
+                addFavorite.setImageResource(android.R.drawable.star_big_on);
+                check = true ;
+            }else addFavorite.setImageResource(android.R.drawable.star_big_off);
         }
     }
     @Override

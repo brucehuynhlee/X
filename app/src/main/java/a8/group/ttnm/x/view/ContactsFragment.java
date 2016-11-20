@@ -152,6 +152,7 @@ public class ContactsFragment extends Fragment {
                 //Write your code if there's no result
             }
         }
+        contactsAdapter.notifyDataSetChanged();
     }
 
 

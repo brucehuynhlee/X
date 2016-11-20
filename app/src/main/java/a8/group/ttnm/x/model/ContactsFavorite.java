@@ -25,4 +25,18 @@ public class ContactsFavorite {
         }
         return me ;
     }
+    public boolean checkContact(Contact contact){
+        for(int i = 0 ; i < favoriteContacts.size() ; i++){
+             if(favoriteContacts.get(i).compareTo(contact) == 0) return true;
+        }
+        return false;
+    }
+    public void removeContact(Contact contact){
+        for(int i = 0 ; i < favoriteContacts.size() ; i++){
+            if(favoriteContacts.get(i).compareTo(contact) == 0) {
+                favoriteContacts.remove(i);
+            }
+        }
+
+    }
 }

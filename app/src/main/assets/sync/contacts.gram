@@ -5,6 +5,6 @@ grammar contact;
 <digit> = choose|
           move down|
           move up|
-          exit;
+          back;
 
 public <contact> = <digit>+;

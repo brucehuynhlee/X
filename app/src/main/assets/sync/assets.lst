@@ -1,6 +1,6 @@
 cmudict-en-us.dict
-contact_delete_confirm.gram
 contact_option.gram
+contact_option_delete_confirm.gram
 contacts.gram
 en-phone.dmp
 en-us-ptm/README
@@ -12,6 +12,7 @@ en-us-ptm/sendump
 en-us-ptm/transition_matrices
 en-us-ptm/variances
 menu.gram
+menu_history.gram
 phone_calling.gram
 search.gram
 weather.dmp
