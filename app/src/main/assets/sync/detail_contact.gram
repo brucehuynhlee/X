@@ -1,0 +1,11 @@
+#JSGF V1.0;
+
+grammar digits;
+
+<digit> = back|
+          like|
+          edit;
+
+
+
+public <digits> = <digit>+;

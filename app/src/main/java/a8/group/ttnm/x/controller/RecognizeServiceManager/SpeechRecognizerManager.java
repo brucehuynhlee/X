@@ -28,6 +28,7 @@ public class SpeechRecognizerManager {
 
     /* Named searches allow to quickly reconfigure the decoder */
     private static final String KWS_SEARCH = "wakeup";
+    private static final String MENU_DETAIL_CONTACT = "detail contact";
     /* Keyword we are looking for to activate menu */
     private static final String KEYPHRASE = "main";
     private static final String MENU = "menu";
@@ -116,6 +117,12 @@ public class SpeechRecognizerManager {
                     // calling gram
                     File phoneCallingGrammar = new File(assetDir, "phone_calling.gram");
                     mPocketSphinxRecognizer.addGrammarSearch(PHONE_CALLING, phoneCallingGrammar);
+                    //manager phone call
+                    //File managerCallGrammar = new File(assetDir, "manager_phone.gram");
+                    //mPocketSphinxRecognizer.addGrammarSearch(MENU_CALL, managerCallGrammar);detail_contact.gram
+                    //manager phone call
+                    File detailContactGrammar = new File(assetDir, "detail_contact.gram");
+                    mPocketSphinxRecognizer.addGrammarSearch(MENU_DETAIL_CONTACT,detailContactGrammar);
 
                     mPocketSphinxRecognizer.addListener(new PocketSphinxRecognitionListener());
                 } catch (IOException e) {
@@ -190,7 +197,11 @@ public class SpeechRecognizerManager {
             String text = hypothesis.getHypstr();
             Toast.makeText(mContext,"Bạn nói: "+text,Toast.LENGTH_SHORT).show();
             mPocketSphinxRecognizer.cancel();
-            onPocketResultListener.OnPocketResult(text);
+            try{
+                onPocketResultListener.OnPocketResult(text);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
 
         @Override

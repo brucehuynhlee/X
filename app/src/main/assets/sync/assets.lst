@@ -2,6 +2,7 @@ cmudict-en-us.dict
 contact_option.gram
 contact_option_delete_confirm.gram
 contacts.gram
+detail_contact.gram
 en-phone.dmp
 en-us-ptm/README
 en-us-ptm/feat.params
@@ -11,6 +12,7 @@ en-us-ptm/noisedict
 en-us-ptm/sendump
 en-us-ptm/transition_matrices
 en-us-ptm/variances
+manager_phone.gram
 menu.gram
 menu_history.gram
 phone_calling.gram

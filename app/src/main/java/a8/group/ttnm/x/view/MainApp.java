@@ -25,6 +25,7 @@ import a8.group.ttnm.x.R;
 import a8.group.ttnm.x.controller.RecognizeServiceManager.SpeechRecognizerManager;
 import a8.group.ttnm.x.model.Contact;
 import a8.group.ttnm.x.model.ContactsFactory;
+import a8.group.ttnm.x.model.ContactsHistory;
 
 
 public class MainApp extends AppCompatActivity implements SpeechRecognizerManager.OnGoogleResultListener,SpeechRecognizerManager.OnPocketResultListener{
@@ -99,10 +100,10 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
         }*/
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.ic_menu_recent_history).setText("Lịch sử"));
-        tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.ic_menu_call).setText("Danh bạ").setTag(MENU_CONTACT));
-        tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.stat_notify_chat).setText("Hộp thư thoại"));
-        tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.star_big_on).setText("Yêu thích"));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.mipmap.ic_history).setText("Lịch sử"));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.mipmap.ic_book).setText("Danh bạ").setTag(MENU_CONTACT));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.mipmap.ic_record_voice).setText("Hộp thư thoại"));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.mipmap.ic_star_on).setText("Yêu thích"));
         //tabLayout.addTab(tabLayout.newTab().setIcon(android.R.drawable.ic_menu_gallery).setText("Nhóm"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
@@ -224,12 +225,13 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
     }
 
     public void showGuideline(String guideLine){
-        Toast.makeText(this.getApplicationContext(),guideLine,Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this.getApplicationContext(),guideLine,Toast.LENGTH_SHORT).show();
     }
 
     // get result pocket recognize
     @Override
     public void OnPocketResult(String result) {
+        hideInputSoft();
         switch (mSpeechRecognize.mPocketSphinxRecognizer.getSearchName()){
             case MENU:
                 try{
@@ -239,6 +241,7 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
                 }
                 break;
             case MENU_SEARCH:
+                autoContact.setText("");
                 try{
                     switchSearch(result);
                 }catch (Exception e){
@@ -261,7 +264,12 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
                 }
                 break;
             case CONTACT_OPTION_DELETE_CONFIRM:
-                switchConfirmDeleteContact(result);
+                try{
+                    switchConfirmDeleteContact(result);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                Toast.makeText(getApplicationContext(),"Nói yes để xóa , hủy bỏ chọn no",Toast.LENGTH_SHORT).show();
                 break;
         }
 
@@ -281,6 +289,7 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
                 startActivity(dialIntent);
                 break;
             case MENU_SEARCH:
+                autoContact.setText("");
                 mSpeechRecognize.mPocketSphinxRecognizer.startListening(MENU_SEARCH);
                 break;
             case MENU_HISTORY:
@@ -314,7 +323,12 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
             case "enter":
                 autoContact.setCursorVisible(true);
                 autoContact.setText("");
-                mSpeechRecognize.setGoogleListening();
+                try{
+                    mSpeechRecognize.setGoogleListening();
+                }catch (Exception e){
+                    e.printStackTrace();
+                    mSpeechRecognize.setPocketListening(MENU_SEARCH);
+                }
                 break;
             case "clear":
                 autoContact.setCursorVisible(true);
@@ -324,27 +338,33 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
             case "go":
                 //break activity , not listening anymore
                 Intent intent = new Intent(getApplicationContext(),DetailContactActivity.class);
-                intent.putExtra("contactDetail",contacts.get(0));
+                //fix
+                intent.putExtra("contactDetail",contacts.get(autoContactPosition));
                 startActivity(intent);
                 break;
             case "back":
+                hideInputSoft();
                 autoContact.setCursorVisible(false);
-                mSpeechRecognize.setPocketListening(MENU_CONTACT);
+                viewPager.setCurrentItem(0);
+                mSpeechRecognize.setPocketListening(MENU);
                 break;
             case "move up":
                 if(autoContactAdapter == null || autoContactAdapter.getCount() == 0) break ;
                 if(autoContactPosition == 0)
                     autoContact.setSelection(autoContactAdapter.getCount()-1);
                 else autoContact.setSelection(++autoContactPosition);
+                mSpeechRecognize.mPocketSphinxRecognizer.startListening(MENU_SEARCH);
                 break;
             case "move down":
                 if(autoContactAdapter == null || autoContactAdapter.getCount() == 0) break ;
                 if(autoContactPosition == (autoContactAdapter.getCount()-1))
                     autoContact.setSelection(0);
                 else autoContact.setSelection(++autoContactPosition);
+                mSpeechRecognize.mPocketSphinxRecognizer.startListening(MENU_SEARCH);
                 break;
             default:
                 mSpeechRecognize.mPocketSphinxRecognizer.startListening(MENU_SEARCH);
+                break;
         }
     }
 
@@ -363,7 +383,7 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
                 contactsFragment.listContacts.expandGroup(contactPosition);
                 mSpeechRecognize.setPocketListening(CONTACT_OPTION);
                 break;
-            case "move down":
+            case "down":
                 contactsFragment.collapseAll();
                 autoContact.setCursorVisible(false);
                 autoContact.setText("");
@@ -373,7 +393,7 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
                 contactsFragment.listContacts.setSelection(contactPosition);
                 mSpeechRecognize.setPocketListening(MENU_CONTACT);
                 break;
-            case "move up":
+            case "up":
                 contactsFragment.collapseAll();
                 autoContact.setCursorVisible(false);
                 autoContact.setText("");
@@ -384,6 +404,7 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
                 break;
             case "back":
                 contactsFragment.collapseAll();
+                viewPager.setCurrentItem(0);
                 mSpeechRecognize.setPocketListening(MENU);
                 break;
             default:
@@ -399,6 +420,7 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
         autoContact.setCursorVisible(false);
         switch(result){
             case "call":
+                ContactsHistory.getInstanceContactsFavorite(this).historyContacts.add(contactsFragment.listDataContact.get(contactPosition));
                 contactsFragment.switchMenu(contactPosition,0);
                 break;
             case "show":
@@ -408,7 +430,6 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
                 contactsFragment.switchMenu(contactPosition,2);
                 break;
             case "delete":
-                contactsFragment.collapseAll();
                 mSpeechRecognize.setPocketListening(CONTACT_OPTION_DELETE_CONFIRM);
                 break;
             case "back":
@@ -419,6 +440,7 @@ public class MainApp extends AppCompatActivity implements SpeechRecognizerManage
                 mSpeechRecognize.setPocketListening(CONTACT_OPTION);
                 break;
         }
+        contactsFragment.collapseAll();
     }
 
     // menu level 5 delete contact confirm menu

@@ -1,0 +1,8 @@
+#JSGF V1.0;
+
+grammar menu;
+
+public <item> =     accept  |
+                    decline;
+
+

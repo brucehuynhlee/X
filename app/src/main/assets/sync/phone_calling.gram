@@ -15,7 +15,7 @@ public <number> =   zero|
                      call |
                      clear |
                      undo |
-                     google |
+                     speak |
                      back;
 
 public <numbers> = <number>+;

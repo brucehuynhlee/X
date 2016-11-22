@@ -30,11 +30,14 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppThemeNew">
+
         <activity
             android:name=".main"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".view.MainApp">
+
+        <activity android:name=".view.MainApp"
+            android:windowSoftInputMode="adjustPan|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -42,6 +45,7 @@
         </activity>
 
         <activity android:name=".view.PhoneCalling"></activity>
+
         <activity
             android:name=".view.EditContact"
             android:label="Sửa liên hệ"
@@ -54,8 +58,8 @@
 
         </activity>
 
-        <!-- Broadcast to recieve a call incoming
-        <receiver
+        <!--Broadcast to recieve a call incoming-->
+        <!--<receiver
             android:name=".controller.Test.IncomingCallReceiver"
             android:enabled="true"
             android:exported="true">
@@ -85,10 +89,10 @@
         <service android:name=".controller.RecordPhoneCall.RecordService" >
         </service>
         -->
-        <service
-            android:name=".controller.RecognizeSpeechService"
+        <!--<service
+            android:name=".controller.Test.RecognizeSpeechService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true" />-->
     </application>
 
 </manifest>

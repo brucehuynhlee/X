@@ -11,15 +11,21 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import a8.group.ttnm.x.R;
+import a8.group.ttnm.x.controller.RecognizeServiceManager.SpeechRecognizerManager;
 import a8.group.ttnm.x.model.Contact;
 import a8.group.ttnm.x.model.ContactsFavorite;
 
-public class DetailContactActivity extends AppCompatActivity {
+public class DetailContactActivity extends AppCompatActivity implements SpeechRecognizerManager.OnPocketResultListener,SpeechRecognizerManager.OnGoogleResultListener{
     Contact contact = null ;
+    private static final String MENU_DETAIL_CONTACT = "detail contact";
     TextView detailName , detailNumber , detailMail , detailAddress ;
     ImageButton addFavorite ;
     boolean check = false ;
+    SpeechRecognizerManager speechRecognizerManager ;
     private void init(){
+        speechRecognizerManager = new SpeechRecognizerManager(this,MENU_DETAIL_CONTACT);
+        speechRecognizerManager.setOnPocketResultListener(this);
+        speechRecognizerManager.setOnGoogleResultListener(this);
          detailAddress = (TextView)findViewById(R.id.detailAddress);
          detailMail = (TextView)findViewById(R.id.detailMail);
          detailName = (TextView)findViewById(R.id.detailName);
@@ -28,19 +34,22 @@ public class DetailContactActivity extends AppCompatActivity {
          addFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(check){
-                    check = false ;
-                   addFavorite.setImageResource(android.R.drawable.star_big_off);
-                   ContactsFavorite.getInstanceContactsFavorite(getApplicationContext()).removeContact(contact);
-                }else{
-                    check = true ;
-                    addFavorite.setImageResource(android.R.drawable.star_big_on);
-                    ContactsFavorite.getInstanceContactsFavorite(getApplicationContext()).favoriteContacts.add(contact);
-                }
+                likeContact();
             }
          });
     }
 
+    private void likeContact(){
+        if(check){
+            check = false ;
+            addFavorite.setImageResource(android.R.drawable.star_big_off);
+            ContactsFavorite.getInstanceContactsFavorite(getApplicationContext()).removeContact(contact);
+        }else{
+            check = true ;
+            addFavorite.setImageResource(android.R.drawable.star_big_on);
+            ContactsFavorite.getInstanceContactsFavorite(getApplicationContext()).favoriteContacts.add(contact);
+        }
+    }
     private void setContent(){
         if(contact != null){
             detailNumber.setText(contact.getNumberContact());
@@ -83,5 +92,26 @@ public class DetailContactActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void OnGoogleResult(String result) {
+
+    }
+
+    @Override
+    public void OnPocketResult(String result) {
+            switch (result){
+                case "like":
+                    likeContact();
+                    speechRecognizerManager.setPocketListening(MENU_DETAIL_CONTACT);
+                    break;
+                case "back":
+                    speechRecognizerManager.mPocketSphinxRecognizer.cancel();
+                    finish();
+                    break;
+                default: speechRecognizerManager.setPocketListening(MENU_DETAIL_CONTACT);
+                    break;
+            }
     }
 }

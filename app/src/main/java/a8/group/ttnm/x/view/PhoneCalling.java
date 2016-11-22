@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.util.TimeUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,10 +19,16 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import a8.group.ttnm.x.R;
 import a8.group.ttnm.x.controller.RecognizeServiceManager.SpeechRecognizerManager;
+import a8.group.ttnm.x.controller.Test.Unity;
+import a8.group.ttnm.x.model.Contact;
+import a8.group.ttnm.x.model.ContactsHistory;
 
 public class PhoneCalling extends AppCompatActivity implements View.OnClickListener,SpeechRecognizerManager.OnGoogleResultListener,SpeechRecognizerManager.OnPocketResultListener {
 
@@ -204,33 +211,13 @@ public class PhoneCalling extends AppCompatActivity implements View.OnClickListe
         speechRecognizerManager.setPocketListening(PHONE_CALLING);
     }
 
-    /*public void splitToNumber(String result){
-        String[] strNumber = result.split(" ");
-        for(int i = 0 ; i < strNumber.length ; i++){
-            char c = convertStringtoNumber(strNumber[i]);
-            if(c == 'c') continue;
-            number = number + c;
-        }
-        txtNumber.setText(number);
-    }
-
-    public char convertStringtoNumber(String number){
-        switch (number){
-            case "không": return '0';
-            case "một": return '1';
-            case "hai": return '2';
-            case "ba": return '3';
-            case "bốn": return '4';
-            case "năm": return '5';
-            case "sáu": return '6';
-            case "bảy": return '7';
-            case "tám": return '8';
-            case "chín": return '9';
-        }
-        return 'c' ;
-    }*/
-
+    private static final DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     private void phoneCall(){
+        Contact contact = ContactsHistory.getInstanceContactsFavorite(this).checkContact(number);
+        if(contact != null)
+            ContactsHistory.getInstanceContactsFavorite(this).historyContacts.add(contact);
+        else
+            ContactsHistory.getInstanceContactsFavorite(this).historyContacts.add(new Contact(12,number,sdf.format(new Date()),"","ng@gmail.com","Khách hàng",Unity.getUriToDrawable(this,R.mipmap.profile)));
         Intent callIntent = new Intent(Intent.ACTION_CALL);
         callIntent.setData(Uri.parse("tel:" + number.replaceAll("-", "")));
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
@@ -322,7 +309,7 @@ public class PhoneCalling extends AppCompatActivity implements View.OnClickListe
                 }finally {
                 }
                 return;
-            case "google":
+            case "speak":
                 //splitToNumber("một hai ba bốn năm sáu năm");
                 speechRecognizerManager.setGoogleListening();
                 return;

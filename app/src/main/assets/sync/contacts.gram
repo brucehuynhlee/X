@@ -3,8 +3,8 @@
 grammar contact;
 
 <digit> = choose|
-          move down|
-          move up|
+          down|
+          up|
           back;
 
 public <contact> = <digit>+;

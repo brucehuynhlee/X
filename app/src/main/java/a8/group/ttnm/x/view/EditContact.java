@@ -75,14 +75,12 @@ public class EditContact extends AppCompatActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_contact);
+        init();
         if (contact == null) {
             this.setTitle("Thêm liên hệ");
-            init();
         }
         else {
-            fixed = true ;
             this.setTitle("Sửa liên hệ");
-            init();
         }
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);

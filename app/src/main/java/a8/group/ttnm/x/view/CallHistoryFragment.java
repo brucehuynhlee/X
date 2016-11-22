@@ -6,11 +6,18 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
 import a8.group.ttnm.x.R;
+import a8.group.ttnm.x.controller.ContactsAdapter;
+import a8.group.ttnm.x.model.Contact;
+import a8.group.ttnm.x.model.ContactsHistory;
 
 
 /**
@@ -34,7 +41,16 @@ public class CallHistoryFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     FloatingActionButton fabCall ;
+    ContactsAdapter contactsAdapter ;
+    RecyclerView contactsRecycle ;
 
+
+    @Override
+    public void onResume(){
+        if(contactsAdapter != null)
+            contactsAdapter.notifyDataSetChanged();
+        super.onResume();
+    }
     public CallHistoryFragment() {
         // Required empty public constructor
     }
@@ -65,7 +81,7 @@ public class CallHistoryFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-
+    ArrayList<Contact> listContacts ;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -78,6 +94,12 @@ public class CallHistoryFragment extends Fragment {
                 startActivity(intent);
             }
         });
+        listContacts = ContactsHistory.getInstanceContactsFavorite(getContext()).historyContacts;
+        contactsRecycle = (RecyclerView)view.findViewById(R.id.listHistories);
+        contactsAdapter = new ContactsAdapter(getActivity(), listContacts);
+        contactsRecycle.setAdapter(contactsAdapter);
+        contactsRecycle.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        contactsAdapter.notifyDataSetChanged();
         // Inflate the layout for this fragment
         return view;
     }

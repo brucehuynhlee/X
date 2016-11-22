@@ -14,64 +14,38 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class IncomingCallReceiver extends BroadcastReceiver {
+import a8.group.ttnm.x.controller.RecognizeServiceManager.SpeechRecognizerManager;
+import a8.group.ttnm.x.view.MainApp;
+
+public class IncomingCallReceiver extends BroadcastReceiver implements SpeechRecognizerManager.OnGoogleResultListener,SpeechRecognizerManager.OnPocketResultListener{
+    private static final String MENU_CALL = "menu call";
     public IncomingCallReceiver() {
+
     }
-    MediaRecorder recorder;
-    File audiofile ;
+    private SpeechRecognizerManager speechRecognizerManager ;
     public static String TAG="IncomingCallReceiver";
     @Override
     public void onReceive(Context context, Intent intent) {
+        //speechRecognizerManager = new SpeechRecognizerManager(context,MENU_CALL);
         if (intent.getAction().equals("android.intent.action.PHONE_STATE")) {
             String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
             Log.d(TAG,"IncomingCallReceiver**Call State=" + state);
 
             if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
-                if(recorder != null) recorder.stop();
                 Log.d(TAG,"IncomingCallReceiver**Idle");
             } else if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+                Intent mainIntent = new Intent(context, MainApp.class);
+                mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(mainIntent);
                 // Incoming call
                 String incomingNumber =
                         intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
                 Log.d(TAG,"IncomingCallReceiver**Incoming call " + incomingNumber);
 
-                //if (!killCall(context)) { // Using the method defined earlier
-                //    Log.d(TAG,"IncomingCallReceiver **Unable to kill incoming call");
-                //}
-
             } else if (state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
-                String out = new SimpleDateFormat("dd-MM-yyyy hh-mm-ss").format(new Date());
-                File sampleDir = new File(Environment.getExternalStorageDirectory(), "/TestRecordingDasa1");
-                if (!sampleDir.exists()) {
-                    sampleDir.mkdirs();
-                }
-                String file_name = "Record";
-                try {
-                    audiofile = File.createTempFile(file_name, ".amr", sampleDir);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                String path = Environment.getExternalStorageDirectory().getAbsolutePath();
-
-                recorder = new MediaRecorder();
-//                          recorder.setAudioSource(MediaRecorder.AudioSource.VOICE_CALL);
-
-                recorder.setAudioSource(MediaRecorder.AudioSource.VOICE_COMMUNICATION);
-                recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
-                recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-                recorder.setOutputFile(audiofile.getAbsolutePath());
-                try {
-                    recorder.prepare();
-                } catch (IllegalStateException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                recorder.start();
-                //Log.d(TAG,"IncomingCallReceiver **Offhook");
+                Log.d(TAG,"IncomingCallReceiver **Offhook");
             }
         } else if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
-            // Outgoing call
             String outgoingNumber = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
             Log.d(TAG,"IncomingCallReceiver **Outgoing call " + outgoingNumber);
 
@@ -111,5 +85,22 @@ public class IncomingCallReceiver extends BroadcastReceiver {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public void OnGoogleResult(String result) {
+
+    }
+    boolean isDecline = false ;
+    @Override
+    public void OnPocketResult(String result) {
+        if(result.equals("Answer")){
+            isDecline = false ;
+        }else if(result.equals("decline")){
+            isDecline = true ;
+        }
+
+
+
     }
 }
